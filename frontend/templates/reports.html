@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Evidence dashboard{% endblock %}
+{% block content %}
+{% set dataset = reports.dataset %}{% set ensemble = reports.ensemble %}
+<section class="grid">
+  <article class="panel metric"><p class="label">DATASET SIZE</p><strong>{% if dataset %}{{ dataset.rows }}{% else %}--{% endif %}</strong><small>Retinal images analysed</small></article>
+  <article class="panel metric"><p class="label">BEST TEST ACCURACY</p><strong>{% if ensemble.EfficientNetB0 %}{{ '%.1f'|format(ensemble.EfficientNetB0.accuracy * 100) }}%{% elif reports.centralized %}{{ '%.1f'|format(reports.centralized.accuracy * 100) }}%{% else %}--{% endif %}</strong><small>Generated on the untouched test split</small></article>
+  <article class="panel metric"><p class="label">CLASS IMBALANCE</p><strong>{% if dataset %}{{ '%.2f'|format(dataset.imbalance_ratio_majority_to_minority) }}:1{% else %}--{% endif %}</strong><small>Majority-to-minority image ratio</small></article>
+</section>
+<section class="panel note"><p class="label">HOW TO READ THESE VALUES</p><h3>Every graph is generated from saved experiment artifacts.</h3><p>Accuracy shows overall correct classifications; macro F1 gives every disease grade equal importance; the confusion matrices show which grades are mistaken for each other. These results are research evidence, not clinical performance claims.</p></section>
+<section class="report-grid">
+  <article class="panel chart-panel"><p class="label">DATASET COMPOSITION</p><h3 class="chart-title">Images by DR grade</h3><p class="chart-note">Shows the source imbalance that motivated weighted/focal-loss experiments.</p><canvas id="classDistribution"></canvas></article>
+  <article class="panel chart-panel"><p class="label">SPLIT QUALITY</p><h3 class="chart-title">Class balance across splits</h3><p class="chart-note">Train, validation, and test samples by diagnosis grade.</p><canvas id="splitDistribution"></canvas></article>
+  <article class="panel chart-panel"><p class="label">MODEL COMPARISON</p><h3 class="chart-title">Test-set performance</h3><p class="chart-note">Higher is better for accuracy, macro F1, and quadratic weighted kappa.</p><canvas id="modelPerformance"></canvas></article>
+  <article class="panel chart-panel"><p class="label">MODEL ERROR</p><h3 class="chart-title">Ordinal error (MAE)</h3><p class="chart-note">Average distance between predicted and actual DR grades. Lower is better.</p><canvas id="modelMae"></canvas></article>
+  <article class="panel chart-panel full-chart"><p class="label">TRAINING CURVES</p><h3 class="chart-title">Training and validation accuracy by epoch</h3><p class="chart-note">Each colour represents a trained architecture; dashed lines are validation accuracy.</p><canvas id="accuracyHistory"></canvas></article>
+  <article class="panel chart-panel full-chart"><p class="label">TRAINING CURVES</p><h3 class="chart-title">Training and validation loss by epoch</h3><p class="chart-note">Loss should generally decline; use it alongside validation metrics, not alone.</p><canvas id="lossHistory"></canvas></article>
+  <article class="panel chart-panel"><p class="label">FEDERATED PARTITION</p><h3 class="chart-title">Images held by each hospital</h3><p class="chart-note">Simulated non-IID client data used for FedAvg.</p><canvas id="clientSamples"></canvas></article>
+  <article class="panel chart-panel"><p class="label">FEDERATED PARTITION</p><h3 class="chart-title">Hospital class mix</h3><p class="chart-note">Each bar shows the diagnostic mix at a simulated site.</p><canvas id="clientClasses"></canvas></article>
+  <article class="panel chart-panel full-chart"><p class="label">FEDERATED ROUNDS</p><h3 class="chart-title">Samples contributing per aggregation round</h3><p class="chart-note" id="federatedRoundsNote">Only completed federated rounds appear.</p><canvas id="federatedRounds"></canvas></article>
+</section>
+<section class="report-grid">
+  <article class="panel"><p class="label">ERROR PATTERN</p><h3 class="chart-title">Centralized baseline confusion matrix</h3><div id="centralizedMatrix"></div></article>
+  <article class="panel"><p class="label">ERROR PATTERN</p><h3 class="chart-title">MobileNetV3Small confusion matrix</h3><div id="mobileMatrix"></div></article>
+  <article class="panel"><p class="label">ERROR PATTERN</p><h3 class="chart-title">EfficientNetB0 confusion matrix</h3><div id="efficientMatrix"></div></article>
+</section>
+{% endblock %}
+{% block scripts %}
+<script>
+(() => {
+  const reports = {{ reports|tojson }}, classNames = {{ class_names|tojson }};
+  const labels = [0,1,2,3,4].map(id => classNames[id]), palette = ['#5146d8','#1ba7a1','#ed9951','#db5f57','#557dbf'];
+  const base = {responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{boxWidth:12,usePointStyle:true}}},scales:{y:{beginAtZero:true,grid:{color:'#edf0f6'}},x:{grid:{display:false}}}};
+  const draw = (id, config) => { const node = document.getElementById(id); if (node && window.Chart && config.data.labels.length) new Chart(node, config); };
+  const dataset = reports.dataset || {}, distribution = dataset.class_distribution || {}, splits = dataset.split_class_distribution || {};
+  draw('classDistribution',{type:'doughnut',data:{labels,datasets:[{data:[0,1,2,3,4].map(id=>distribution[id]||0),backgroundColor:palette,borderWidth:2,borderColor:'#fff'}]},options:{...base,cutout:'58%',scales:{}}});
+  draw('splitDistribution',{type:'bar',data:{labels:['Train','Validation','Test'],datasets:[0,1,2,3,4].map(id=>({label:labels[id],data:['train','val','test'].map(split=>(splits[split]||{})[id]||0),backgroundColor:palette[id]}))},options:{...base,scales:{...base.scales,x:{stacked:true,grid:{display:false}},y:{stacked:true,beginAtZero:true}}}});
+  const metrics = {...(reports.centralized?{'Centralized baseline':reports.centralized}:{}),...(reports.ensemble||{})}, modelNames=Object.keys(metrics);
+  draw('modelPerformance',{type:'bar',data:{labels:modelNames,datasets:['accuracy','macro_f1','qwk'].map((metric,i)=>({label:metric==='qwk'?'QWK':metric.replace('_',' ').replace(/\b\w/g,c=>c.toUpperCase()),data:modelNames.map(name=>(metrics[name][metric]||0)*100),backgroundColor:palette[i]}))},options:{...base,scales:{...base.scales,y:{...base.scales.y,max:100,ticks:{callback:value=>value+'%'}}}}});
+  draw('modelMae',{type:'bar',data:{labels:modelNames,datasets:[{label:'Mean absolute error',data:modelNames.map(name=>metrics[name].mae||0),backgroundColor:'#ed9951'}]},options:base});
+  const histories=reports.histories||{}, historyNames=Object.keys(histories).filter(name=>histories[name].length);
+  const series=(metric, validation)=>historyNames.flatMap((name,i)=>[{label:name+' training',data:histories[name].map((row,epoch)=>({x:epoch+1,y:row[metric]||0})),borderColor:palette[i],backgroundColor:palette[i],tension:.25},{label:name+' validation',data:histories[name].map((row,epoch)=>({x:epoch+1,y:row[validation]||0})),borderColor:palette[i],borderDash:[6,4],pointStyle:'rectRot',tension:.25}]);
+  const lineOptions=percent=>({...base,scales:{x:{type:'linear',title:{display:true,text:'Epoch'},ticks:{precision:0},grid:{display:false}},y:{...base.scales.y,...(percent?{min:0,max:1,ticks:{callback:value=>(value*100).toFixed(0)+'%'}}:{})}}});
+  draw('accuracyHistory',{type:'line',data:{labels:[1],datasets:series('accuracy','val_accuracy')},options:lineOptions(true)});
+  draw('lossHistory',{type:'line',data:{labels:[1],datasets:series('loss','val_loss')},options:lineOptions(false)});
+  const clients=reports.client_distribution||[];
+  draw('clientSamples',{type:'bar',data:{labels:clients.map(row=>row.client),datasets:[{label:'Images',data:clients.map(row=>+row.total),backgroundColor:'#1ba7a1'}]},options:base});
+  draw('clientClasses',{type:'bar',data:{labels:clients.map(row=>row.client),datasets:[0,1,2,3,4].map(id=>({label:labels[id],data:clients.map(row=>+row['class_'+id]),backgroundColor:palette[id]}))},options:{...base,scales:{...base.scales,x:{stacked:true,grid:{display:false}},y:{stacked:true,beginAtZero:true}}}});
+  const rounds=reports.rounds||[];
+  const roundsNote=document.getElementById('federatedRoundsNote');
+  if(rounds.length===1&&roundsNote)roundsNote.textContent='One completed round is available: the bar shows all 2,563 contributing samples. Run more federated rounds to view a trend.';
+  draw('federatedRounds',{type:rounds.length===1?'bar':'line',data:{labels:rounds.map(row=>'Round '+row.round),datasets:[{label:'Contributing samples',data:rounds.map(row=>row.samples),borderColor:'#1ba7a1',backgroundColor:rounds.length===1?'#1ba7a1':'#1ba7a133',fill:rounds.length>1,tension:.25,borderRadius:rounds.length===1?6:0,maxBarThickness:rounds.length===1?140:undefined}]},options:base});
+  const heatmap=(id,matrix)=>{const root=document.getElementById(id);if(!root)return;if(!matrix||!matrix.length){root.innerHTML='<p class="empty">No evaluation artifact generated yet.</p>';return}const max=Math.max(...matrix.flat(),1);root.className='heatmap-wrap';root.innerHTML='<table class="heatmap"><thead><tr><th>Actual \\ Predicted</th>'+labels.map(label=>'<th>'+label+'</th>').join('')+'</tr></thead><tbody>'+matrix.map((row,i)=>'<tr><td class="row-label">'+labels[i]+'</td>'+row.map(value=>'<td style="background:rgba(81,70,216,'+(.08+.85*value/max).toFixed(2)+')">'+value+'</td>').join('')+'</tr>').join('')+'</tbody></table><div class="legend"><span>Lower</span><i class="legend-gradient"></i><span>Higher count</span></div>'};
+  heatmap('centralizedMatrix',reports.centralized&&reports.centralized.confusion_matrix);
+  heatmap('mobileMatrix',reports.ensemble&&reports.ensemble.MobileNetV3Small&&reports.ensemble.MobileNetV3Small.confusion_matrix);
+  heatmap('efficientMatrix',reports.ensemble&&reports.ensemble.EfficientNetB0&&reports.ensemble.EfficientNetB0.confusion_matrix);
+})();
+</script>
+{% endblock %}

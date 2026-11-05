@@ -1,0 +1,17 @@
+{
+  "csv_exists": true,
+  "image_dir_exists": true,
+  "total": 3662,
+  "valid": 3662,
+  "invalid": 0,
+  "missing": 0,
+  "corrupt": 0,
+  "duplicate_ids": 0,
+  "class_counts": {
+    "0": 1805,
+    "1": 370,
+    "2": 999,
+    "3": 193,
+    "4": 295
+  }
+}

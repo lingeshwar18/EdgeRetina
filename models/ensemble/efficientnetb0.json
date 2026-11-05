@@ -1,0 +1,72 @@
+{
+  "architecture": "EfficientNetB0",
+  "num_classes": 5,
+  "class_names": {
+    "0": "No DR",
+    "1": "Mild DR",
+    "2": "Moderate DR",
+    "3": "Severe DR",
+    "4": "Proliferative DR"
+  },
+  "image_size": [
+    224,
+    224
+  ],
+  "preprocessing_version": "edgeretina-preprocess-v1",
+  "training_seed": 42,
+  "trained": true,
+  "loss": "focal",
+  "criterion": "macro_f1",
+  "augmentation": [
+    "horizontal_flip",
+    "brightness",
+    "contrast"
+  ],
+  "class_weights": null,
+  "test_metrics": {
+    "accuracy": 0.7109090909090909,
+    "macro_precision": 0.6846534399312993,
+    "macro_recall": 0.4352369935701148,
+    "macro_f1": 0.4092324411315378,
+    "weighted_f1": 0.6653627058733849,
+    "qwk": 0.7426970625850065,
+    "mae": 0.4709090909090909,
+    "confusion_matrix": [
+      [
+        264,
+        0,
+        3,
+        0,
+        4
+      ],
+      [
+        13,
+        2,
+        36,
+        0,
+        5
+      ],
+      [
+        24,
+        1,
+        105,
+        0,
+        20
+      ],
+      [
+        1,
+        0,
+        12,
+        1,
+        15
+      ],
+      [
+        2,
+        0,
+        23,
+        0,
+        19
+      ]
+    ]
+  }
+}

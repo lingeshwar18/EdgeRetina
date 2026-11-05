@@ -1,0 +1,65 @@
+{
+  "architecture": "MobileNetV3Small",
+  "num_classes": 5,
+  "class_names": {
+    "0": "No DR",
+    "1": "Mild DR",
+    "2": "Moderate DR",
+    "3": "Severe DR",
+    "4": "Proliferative DR"
+  },
+  "image_size": [
+    224,
+    224
+  ],
+  "preprocessing_version": "edgeretina-preprocess-v1",
+  "training_seed": 42,
+  "trained": true,
+  "training_stage": "weighted_head_checkpoint",
+  "test_metrics": {
+    "accuracy": 0.5109090909090909,
+    "macro_precision": 0.3440563158599286,
+    "macro_recall": 0.3597509145221323,
+    "macro_f1": 0.33800510284031593,
+    "weighted_f1": 0.5347011050367584,
+    "qwk": 0.4888865060753974,
+    "mae": 0.9418181818181818,
+    "confusion_matrix": [
+      [
+        199,
+        8,
+        30,
+        21,
+        13
+      ],
+      [
+        8,
+        19,
+        18,
+        1,
+        10
+      ],
+      [
+        17,
+        25,
+        44,
+        7,
+        57
+      ],
+      [
+        0,
+        2,
+        13,
+        0,
+        14
+      ],
+      [
+        4,
+        8,
+        13,
+        0,
+        19
+      ]
+    ]
+  }
+}

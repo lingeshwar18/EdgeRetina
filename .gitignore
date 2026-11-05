@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+# Environment and secrets
+.env
+*.pem
+*.key
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Dataset
+dataset/
+data/
+*.zip
+
+# Training checkpoints
+checkpoints/
+logs/
+runs/
+
+# Temporary files
+*.log
+.DS_Store
+
+# IDE
+.vscode/

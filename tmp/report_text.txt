@@ -1,0 +1,2779 @@
+--- PAGE 1 ---
+ 
+EdgeRetina: Privacy-Aware Diabetic 
+Retinopathy Classification Using Simulated 
+Federated Learning and Explainable Deep 
+Learning 
+SWE3004 – Software Design and Development 
+Project 
+ 
+ 
+Submitted in partial fulfillment of the requirements for the degree of 
+ 
+Master of Technology in Software Engineering 
+in 
+Department of Software and Systems Engineering 
+by 
+Lingeshwar G 
+22MIS0558 
+ 
+Under the guidance of 
+Dr. Asha N 
+Associate Professor Grade 1, SCORE 
+School of Computer Science Engineering and Information Systems 
+VIT, Vellore 
+ 
+ 
+ 
+ 
+October, 2026 
+
+--- PAGE 2 ---
+ii 
+ 
+DECLARATION 
+ 
+  I hereby declare that the SWE3004 - Software Design and Development Project 
+entitled “ EdgeRetina: Privacy -Aware Diabetic Retinopathy Classification Using 
+Simulated Federated Learning and Explainable Deep Learning” submitted by me, for 
+the award of the degree of Master of Technology in Software Engineering in 
+Department of Software and Systems Engineering, School of Computer Science 
+Engineering and Information Systems to VIT is a record of bonafide work carried out 
+by me under the supervision of Dr. Asha N, Associate Professor Grade 1, SCORE, 
+VIT, Vellore. 
+  I further declare that the work reported in this project has not been submitted 
+and will not be submitted, either in part or in full, for the award of any other degree or 
+diploma in this institute or any other institute or university. 
+ 
+ 
+ 
+Place: Vellore  
+Date: 
+ 
+ 
+ 
+ 
+ 
+Signature of the Candidate 
+ 
+--- PAGE 3 ---
+iii 
+ 
+CERTIFICATE 
+ This is to certify that the SWE3004 - Software Design and Development Project 
+entitled “ EdgeRetina: Privacy -Aware Diabetic Retinopathy Classification Using 
+Simulated Federated Learning and Explainable Deep Learning ” submitted by 
+Lingeshwar G (22MIS0558), SCORE, VIT, for the award of the degree of Master of 
+Technology in Software Engineering in Department of Software and Systems 
+Engineering, is a record of bonafide work carried out by him under my supervision 
+during the period, 06. 07. 2026 to 03.11.2026, as per the VIT code of academic and 
+research ethics. 
+ The contents of this report have not been submitted and will not be submitted 
+either in part or in full, for the award of any other degree or diploma in this institute or 
+any other institute or university. The project fulfills the requirements and regulations of 
+the University and in my opinion meets the necessary standards for submission. 
+ 
+ 
+Place: Vellore 
+Date:                                                                     
+ 
+ 
+Signature of the VIT-SCORE Guide 
+ 
+ 
+ 
+ 
+ 
+Internal Examiner External Examiner 
+ 
+ 
+ 
+ 
+ 
+Head of the Department 
+Department of Software and Systems Engineering
+--- PAGE 4 ---
+iv 
+ 
+ACKNOWLEDGEMENT 
+ 
+ 
+It is my pleasure to express with a deep sense of gratitude to my project guide Dr. Asha 
+N, Associate Professor Grade 1 , School of Computer Science Engineering and 
+Information Systems, Vellore Institute of Technology, Vellore for her constant 
+guidance, continual encouragement, in my endeavor. My association with her is not 
+confined to academics only, but it is a great oppo rtunity on my part to work with an 
+intellectual and an expert in the field of machine learning, federated learning and 
+explainable AI for medical image analysis. 
+  
+"I would like to express my heartfelt gratitude to Honorable C hancellor Dr. G 
+Viswanathan; respected Vice Presidents Dr. Sankar Viswanathan , Dr. Sekar 
+Viswanathan, Vice Chancellor Dr. V. S. Kanchana Bhaaskaran ; Pro-Vice 
+Chancellor Dr. Partha Sharathi Mallick; and Registrar Dr. Jayabarathi T.  
+ 
+My whole-hearted thanks to  Dean Dr. Daphne Lopez, School of Computer Science 
+Engineering and Information Systems, Head, Department of Software and Systems 
+Engineering Dr. Thanapal P , MTech - Software Engineering Project Coordinators                   
+Dr. Thilagavathi M and Dr. Brijendra Singh , SCORE School Project Coordinator                
+Dr. Karthikeyan P, all faculty, staff and members working as limbs of our university 
+for their continuous guidance throughout my course of study in unlimited ways. 
+ 
+It is indeed a pleasure to thank my parents and friends who persuaded and encouraged 
+me to take up and complete my project successfully. Last, but not least, I express my 
+gratitude and appreciation to all those who have helped me directly or indirectly 
+towards the successful completion of the project. 
+ 
+Place: Vellore 
+Date:          Lingeshwar G 
+--- PAGE 5 ---
+v 
+ 
+EXECUTIVE SUMMARY 
+ 
+Diabetic retinopathy (DR) can cause irreversible vision loss if it is not detected early, 
+and training deep learning models for its detection normally requires centralising 
+sensitive retinal images. This project presents EdgeRetina, a research prototype fo r 
+privacy-aware DR classification using simulated federated learning and explainable 
+deep learning. The system classifies fundus images from the APTOS 2019 dataset 
+(3,662 images) into five severity grades using MobileNetV3Small and 
+EfficientNetB0. On a held-out test set, EfficientNetB0 achieved 71.1% accuracy with 
+40.9% macro -F1, and MobileNetV3Small achieved 63.3% accuracy with 42.0% 
+macro-F1; the low macro -F1 reflects class imbalance. A simulated federated 
+workflow with four clients applies L2 -norm update  clipping and Gaussian noise 
+before Federated Averaging; this is privacy -inspired processing and not a formally 
+verified differential privacy guarantee. Grad -CAM heatmaps provide visual 
+explanations. A Flask web application supports image upload, predictio n with 
+confidence and class probabilities, Grad -CAM display, training and a SQLite 
+prediction history. The report documents the design, implementation, results and 
+limitations of the work. 
+--- PAGE 6 ---
+vi 
+ 
+CONTENTS 
+ Page No. 
+Acknowledgement ......................................................................................................... v 
+Executive Summary ...................................................................................................... vi 
+Table of Contents ......................................................................................................... vii 
+List of Figures ................................................................................................................ x 
+List of Tables ................................................................................................................ xi 
+List of Abbreviations ................................................................................................... xii 
+Symbols and Notations ...............................................................................................xiii 
+CHAPTER 1   INTRODUCTION .............................................................................. 1 
+ 
+1.1 Objective .................................................................................................... 1 
+1.2 Motivation ................................................................................................. 2 
+1.3 Background ................................................................................................ 3 
+1.4 Problem Statement ..................................................................................... 4 
+1.5 Scope of the Project ................................................................................... 5 
+1.6 Proposed Approach and Main Contributions ............................................ 5 
+1.7 Organisation of the Report ........................................................................ 6 
+CHAPTER 2   PROJECT DESCRIPTION, LITERATURE SURVEY AND 
+GOALS.......................................................................................................................... 7 
+ 
+2.1 Project Description .................................................................................... 7 
+2.2 Project Goals ............................................................................................. 7 
+2.3 Literature Survey ....................................................................................... 8 
+2.4 Findings from the Literature Survey ....................................................... 10 
+2.5 Research Gap and Positioning of EdgeRetina ......................................... 11 
+2.6 Expected Outcomes and Deliverables ..................................................... 11 
+CHAPTER 3   TECHNICAL SPECIFICATION ................................................... 12 
+ 
+3.1 Existing System and Proposed System .................................................... 12 
+3.2 Functional Requirements ......................................................................... 12 
+3.3 Non-Functional Requirements ................................................................. 13 
+3.4 Hardware Requirements .......................................................................... 13 
+3.5 Software Requirements ........................................................................... 14 
+3.6 Assumptions and Constraints .................................................................. 14 
+3.7 Use-Case Scenarios ................................................................................. 14 
+3.8 Requirement Traceability ........................................................................ 15 
+3.9 Feasibility Study ...................................................................................... 16 
+ 
+ 
+--- PAGE 7 ---
+vii 
+ 
+CHAPTER 4   DESIGN APPROACH AND DETAILS ......................................... 17 
+ 
+4.1 Design Approach and Methodology ........................................................ 17 
+4.2 Database Design ...................................................................................... 22 
+4.3 Codes and Standards ................................................................................ 22 
+4.4 Constraints, Alternatives and Trade-offs ................................................. 23 
+4.5 Data Flow and Interaction Between Components ................................... 23 
+4.6 Security and Privacy Considerations in the Design ................................ 24 
+4.7 Detailed Description of the Main Classes ............................................... 24 
+CHAPTER 5   DATASET, PREPROCESSING AND MODEL 
+DEVELOPMENT ...................................................................................................... 26 
+ 
+5.1 The APTOS 2019 Dataset ....................................................................... 26 
+5.2 Dataset Validation ................................................................................... 27 
+5.3 Image Preprocessing ................................................................................ 27 
+5.4 Dataset Partitioning ................................................................................. 28 
+5.5 Model Architectures ................................................................................ 29 
+5.6 Output Layer, Probabilities and Confidence ........................................... 30 
+5.7 Model Training ........................................................................................ 31 
+5.8 Handling Class Imbalance ....................................................................... 32 
+5.9 Evaluation Protocol ................................................................................. 33 
+CHAPTER 6   FEDERATED LEARNING, PRIVACY-INSPIRED 
+PROCESSING AND EXPLAINABILITY .............................................................. 34 
+ 
+6.1 Motivation for Federated Learning ......................................................... 34 
+6.2 Simulated Federated Architecture ........................................................... 34 
+6.3 Local Training and Model Updates ......................................................... 35 
+6.4 Federated Averaging ............................................................................... 35 
+6.5 Privacy-Inspired Update Processing ........................................................ 36 
+6.6 Global Model Handling ........................................................................... 38 
+6.7 Explainability with Grad-CAM ............................................................... 39 
+6.8 Illustrative Example of One Aggregation Round .................................... 39 
+CHAPTER 7   IMPLEMENTATION, SCHEDULE, TASKS AND 
+MILESTONES ........................................................................................................... 41 
+ 
+7.1 Development Environment ...................................................................... 41 
+7.2 Dataset Validation and Preprocessing ..................................................... 42 
+7.3 Dataset Splitting and Client Partitioning ................................................. 42 
+7.4 Model Construction and Training ........................................................... 43 
+7.5 Federated Learning Modules ................................................................... 44 
+7.6 Prediction and Grad-CAM ...................................................................... 45 
+7.7 Flask Routes and Database ...................................................................... 45 
+--- PAGE 8 ---
+viii 
+ 
+7.8 Project Schedule, Tasks and Milestones ................................................. 46 
+7.9 Integration and Run-Time Behaviour ...................................................... 47 
+CHAPTER 8   PROJECT DEMONSTRATION .................................................... 49 
+ 
+8.1 Dashboard and Home Page ..................................................................... 49 
+8.2 Training Control Room ........................................................................... 49 
+8.3 Federated Learning with Privacy-Inspired Processing ............................ 51 
+8.4 Prediction Workspace .............................................................................. 51 
+8.5 Grad-CAM Explanation .......................................................................... 54 
+8.6 Prediction History .................................................................................... 55 
+8.7 Evidence Dashboard ................................................................................ 55 
+8.8 Typical Usage Session ............................................................................. 56 
+CHAPTER 9   TESTING, RESULTS AND DISCUSSION ................................... 57 
+ 
+9.1 Testing Strategy ....................................................................................... 57 
+9.2 Functional Test Cases .............................................................................. 57 
+9.3 Evaluation Metrics ................................................................................... 58 
+9.4 Centralized Model Results ...................................................................... 59 
+9.5 Confusion Matrix Analysis ...................................................................... 60 
+9.6 The Centralized Baseline and Consistency of the Evidence ................... 62 
+9.7 Federated Model Evaluation Status ......................................................... 64 
+9.8 Discussion ................................................................................................ 64 
+9.9 Error Pattern Analysis ............................................................................. 65 
+9.10 Threats to Validity ................................................................................... 65 
+9.11 Summary of Findings .............................................................................. 66 
+CHAPTER 10   LIMITATIONS AND FUTURE WORK ..................................... 67 
+ 
+10.1 Limitations ............................................................................................... 67 
+10.2 Future Work ............................................................................................. 67 
+10.3 Ethical and Regulatory Considerations ................................................... 68 
+CHAPTER 11   SUMMARY ..................................................................................... 69 
+ 
+REFERENCES ........................................................................................................... 71 
+ 
+APPENDIX A .................................................................................................................  
+ 
+A.1 Additional Screenshots ............................................................................ 75 
+A.2 Additional Code Listings ......................................................................... 76 
+--- PAGE 9 ---
+ix 
+ 
+LIST OF FIGURES 
+Figure No. Title Page No. 
+Fig. 4.1 System Architecture of EdgeRetina ...................................................... 18 
+Fig. 4.2 End-to-End Methodology of the EdgeRetina System ........................... 19 
+Fig. 4.3 Use-Case Diagram of EdgeRetina ........................................................ 20 
+Fig. 4.4 Class Diagram of EdgeRetina ............................................................... 21 
+Fig. 4.5 Prediction Workflow ............................................................................. 21 
+Fig. 5.1 Dataset Composition by DR Grade ....................................................... 27 
+Fig. 5.2 Class Balance Across Training, Validation and Test Splits .................. 29 
+Fig. 6.1 One Round of the Simulated Federated Workflow ............................... 35 
+Fig. 8.1 Home Page of the EdgeRetina Web Application .................................. 49 
+Fig. 8.2 Training Control Room with the Dataset Validation Step .................... 50 
+Fig. 8.3 Multi-Model Training Completed with Verified Test Metrics ............. 50 
+Fig. 8.4 Training and Validation Accuracy Recorded by Stage ......................... 51 
+Fig. 8.5 Federated Learning and Privacy-Inspired Processing Page .................. 51 
+Fig. 8.6 Prediction Workspace with an Uploaded Retinal Image ...................... 52 
+Fig. 8.7 Prediction Output with a Low-Confidence (Uncertain) Prediction ...... 53 
+Fig. 8.8 Prediction Output with Class Probabilities (Moderate DR, 57.1%) ..... 53 
+Fig. 8.9 Optional Second-Opinion Panel Labelled as Not a Clinical Diagnosis 54 
+Fig. 8.10 Grad-CAM Heatmap Overlay on a Retinal Fundus Image ................... 54 
+Fig. 8.11 A Second Grad-CAM Example ............................................................ 55 
+Fig. 8.12 Prediction History Page......................................................................... 55 
+Fig. 8.13 Evidence Dashboard of the Application ............................................... 56 
+Fig. 9.1 Test-Set Performance: Accuracy, Macro-F1 and Quadratic Weighted 
+Kappa .................................................................................................... 60 
+Fig. 9.2 Confusion Matrix of EfficientNetB0 (Rows: Actual, Columns: 
+Predicted) .............................................................................................. 61 
+Fig. 9.3 Per-Class F1-Score Derived from the Confusion Matrices .................. 62 
+Fig. 9.4 Confusion Matrix of the Centralized Baseline Run .............................. 63 
+Fig. 9.5 Ordinal Error (Mean Absolute Error) of the Evaluated Models ........... 63 
+Fig. A.1 Training Console Log Shown in the Training Page (Sample 1) ........... 75 
+Fig. A.2 Training Console Log at the End of an Epoch (Sample 2) ................... 75 
+ 
+ 
+ 
+ 
+--- PAGE 10 ---
+x 
+ 
+ 
+LIST OF TABLES 
+Table No. Title........................................................................................... Page No. 
+Table 2.1 Project Goals and Their Verification ..................................................... 7 
+Table 2.2 Summary of the Literature Survey ......................................................... 8 
+Table 3.1 Functional Requirements ..................................................................... 12 
+Table 3.2 Non-Functional Requirements ............................................................. 13 
+Table 3.3 Hardware Requirements....................................................................... 13 
+Table 3.4 Software and Technologies .................................................................. 14 
+Table 3.5 Use-Case Scenarios .............................................................................. 15 
+Table 3.6 Requirement Traceability Matrix ......................................................... 15 
+Table 4.1 Prediction Record Structure ................................................................. 22 
+Table 4.2 Codes, Standards and Conventions Followed ...................................... 22 
+Table 4.3 Design Alternatives and Trade-offs ..................................................... 23 
+Table 5.1 Class Distribution of the APTOS 2019 Dataset Used ......................... 26 
+Table 5.2 Dataset Validation Checks ................................................................... 27 
+Table 5.3 Preprocessing Pipeline ......................................................................... 28 
+Table 5.4 Comparison of the Two Architectures Used ........................................ 30 
+Table 5.5 Recorded Training and Validation Accuracy by Stage ........................ 31 
+Table 5.6 Training Configuration Summary ........................................................ 32 
+Table 6.1 Illustrative FedAvg Round for One Parameter (Hypothetical Numbers)
+ 40 
+Table 7.1 Module Overview and Responsibilities ............................................... 41 
+Table 7.2 Project Phases and Tasks ..................................................................... 46 
+Table 7.3 Project Milestones ................................................................................ 47 
+Table 9.1 Testing Strategies ................................................................................. 57 
+Table 9.2 Functional Test Cases .......................................................................... 57 
+Table 9.3 Centralized Test Results of the Two Models ....................................... 59 
+Table 9.4 Per-Class Metrics of EfficientNetB0 Derived from the Confusion 
+Matrix………………………………………………………………………………...61 
+Table 9.5 Consistency Checks Between Reported Metrics and Figures .............. 64 
+Table 9.6 Per-Class Metrics of the Centralized Baseline Derived from Its 
+Confusion Matrix ......................................................................................................... 65 
+Table 9.7 Summary of Main Findings ................................................................. 66 
+Table 10.1 Limitations of the Current Implementation ......................................... 67 
+ 
+--- PAGE 11 ---
+xi 
+ 
+LIST OF ABBREVIATIONS 
+AI Artificial Intelligence 
+API Application Programming Interface 
+APTOS Asia Pacific Tele-Ophthalmology Society 
+CLAHE Contrast Limited Adaptive Histogram Equalization 
+CNN Convolutional Neural Network 
+CSS Cascading Style Sheets 
+DL Deep Learning 
+DP Differential Privacy 
+DR Diabetic Retinopathy 
+FedAvg Federated Averaging 
+FL Federated Learning 
+FN False Negative 
+FP False Positive 
+FR Functional Requirement 
+GPU Graphics Processing Unit 
+Grad-CAM Gradient-weighted Class Activation Mapping 
+HTML HyperText Markup Language 
+JSON JavaScript Object Notation 
+MAE Mean Absolute Error 
+ML Machine Learning 
+NFR Non-Functional Requirement 
+NPDR Non-Proliferative Diabetic Retinopathy 
+PDR Proliferative Diabetic Retinopathy 
+QWK Quadratic Weighted Kappa 
+ReLU Rectified Linear Unit 
+RGB Red, Green, Blue 
+SQL Structured Query Language 
+TN / TP True Negative / True Positive 
+UML Unified Modeling Language 
+--- PAGE 12 ---
+xii 
+ 
+SYMBOLS AND NOTATIONS 
+wt Global model parameters at round t 
+wt+1(k) Local model of client k after training in round t 
+K Number of federated clients (K = 4) 
+nk, N Samples at client k; total samples over all clients 
+Δk Model update of client k 
+‖Δ‖₂ L2 norm of an update 
+C Clipping norm (1.0 in the training page) 
+s Standard deviation of the Gaussian noise 
+𝒩(0, s²I) Zero-mean Gaussian noise with covariance s²I 
+zi, pi Raw score (logit) and softmax probability of class i 
+yi One-hot label of class i 
+αkc Grad-CAM weight of feature map k for class c 
+Ak k-th feature map of a convolutional layer 
+κw Quadratic weighted kappa 
+(ε, δ) Differential privacy parameters (not computed in this project) 
+--- PAGE 13 ---
+1 
+ 
+CHAPTER 1 
+INTRODUCTION 
+Diabetic retinopathy (DR) is one of the most common microvascular complications of 
+diabetes mellitus. It develops when prolonged high blood sugar damages the small 
+blood vessels that nourish the retina, the light-sensitive tissue at the back of the eye. In 
+its early stages the disease is usually silent: a patient may notice no change in vision 
+while microscopic lesions are already forming. If the condition is not detected and 
+managed in time, it can progress to macular oedema, retinal haemorrhage, and 
+eventually irreversible vision loss. Regular screening of retinal fundus photographs is 
+therefore a cornerstone of diabetes care, because early detection allows timely referral 
+and treatment. 
+Artificial Intelligence (AI), and deep learning in particular, has changed how 
+medical images are analysed. Convolutional neural networks (CNNs) learn visual 
+patterns directly from labelled images and can grade retinal photographs without hand-
+crafted feat ures. Landmark studies have shown that such models can approach the 
+performance of trained graders (Gulshan et al., 2016; Ting et al., 2017; Gargeya & 
+Leng, 2017). Yet moving these models from research into real healthcare settings raises 
+problems that go beyond accuracy: the training data are sensitive, they are scattered 
+across institutions, and the predictions of a deep network are difficult for a clinician to 
+inspect. 
+This project, EdgeRetina, addresses three of these concerns together. It 
+classifies retinal fundus images into five diabetic retinopathy severity categories, it 
+demonstrates a simulated federated learning workflow in which training data stay in 
+separate client partitions, and it produces Grad -CAM visual explanations so that a 
+prediction can be examined and not merely accepted. The whole system is delivered as 
+a Flask-based web application with prediction history stored in SQLite. The work is an 
+academic research prototype develope d for the course SWE3004 – Software Design 
+and Development Project of the M.Tech Software Engineering programme. 
+1.1 Objective 
+The primary objective of this project is to design, implement and evaluate a software 
+system that classifies diabetic retinopathy severity from retinal fundus images, while 
+demonstrating privacy -aware distributed training and explainable predictions. The 
+--- PAGE 14 ---
+2 
+ 
+specific objectives are listed below. 
+• To develop a deep learning based system for five -class diabetic retinopathy 
+classification (No DR, Mild, Moderate, Severe and Proliferative DR). 
+• To use the APTOS 2019 Blindness Detection dataset and to validate and 
+preprocess the retinal images before training. 
+• To implement and compare two lightweight transfer -learning architectures, 
+MobileNetV3Small and EfficientNetB0. 
+• To simulate four hospital clients and train a shared model with Federated 
+Averaging (FedAvg) without pooling client images. 
+• To apply L2-norm update clipping and Gaussian noise to client model updates 
+as a privacy-inspired mechanism. 
+• To evaluate the models with accuracy, precision, recall, F1-score, macro-F1 and 
+confusion matrices, and to interpret the results in the presence of class 
+imbalance. 
+• To generate Grad-CAM heatmaps that show which image regions influenced a 
+prediction. 
+• To deliver the system through a Flask web interface that supports image upload, 
+prediction with confidence and class probabilities, training control and 
+prediction history in SQLite. 
+ 
+1.2 Motivation 
+Three practical observations motivate the project. The first is the scale of the screening 
+problem. Diabetes is common and DR screening must be repeated at regular intervals, 
+so the number of fundus photographs to be reviewed is very large. Manual grading is 
+slow and depends on scarce specialist time. An automated first-pass classifier can help 
+prioritise images for expert review, which is the role EdgeRetina is meant to 
+demonstrate. 
+The second observation is the problem of data governance. Retinal images are 
+medical records. Conventional centralised training requires copying images from every 
+contributing hospital to one server, which creates privacy, security and legal 
+difficulties. Federated learning (McMahan et al., 2017) offers a different arrangement 
+in which each participant trains on its own data and only model parameters or updates 
+--- PAGE 15 ---
+3 
+ 
+travel to a coordinating server. Reviews of the field describe this as a promising route 
+for collaborative medical AI (Rieke et al., 2020; Sheller et al., 2020). However, 
+federated learning alone is not a privacy guarantee, because shared updates can still  
+leak information about the training data (Zhu et al., 2019). This motivates adding 
+update-level protections such as clipping and noise, and being honest about what those 
+protections do and do not provide. 
+The third observation concerns trust. A bare class label from a neural network 
+is hard to accept in a clinical context. Visual explanation methods such as Grad -CAM 
+(Selvaraju et al., 2017) give a reviewer something to look at, even though they are not 
+a proof of correctness. Combining classification, simulated federated training, privacy-
+inspired update processing and explanation in one working application is the motivation 
+for EdgeRetina. 
+1.3 Background 
+1.3.1 Diabetic Retinopathy and Its Severity Grades 
+The international clinical classification of diabetic retinopathy grades the disease from 
+no apparent retinopathy to proliferative retinopathy (Wilkinson et al., 2003). The 
+APTOS 2019 dataset used in this project follows a five-level labelling of the same idea. 
+In No DR, no abnormality is visible. In Mild DR, only a few microaneurysms are 
+present. Moderate DR shows more extensive microaneurysms, haemorrhages and 
+exudates. Severe DR indicates widespread haemorrhages and vascular changes that 
+place the eye at  high risk of progression. Proliferative DR is the advanced stage, in 
+which abnormal new vessels grow on the retina and can bleed or cause retinal 
+detachment. The labels are ordered, so confusing Mild with Moderate is a smaller error 
+than confusing No DR with Proliferative DR; this ordinal nature is reflected later in the 
+evaluation by the quadratic weighted kappa and the mean absolute grade error. 
+1.3.2 Deep Learning and Transfer Learning 
+Training a deep CNN from scratch needs a large number of labelled images. Medical 
+datasets are usually much smaller. Transfer learning reuses a network that was first 
+trained on a large general image collection and adapts it to the new task (Yosinski et 
+al., 2014). Typically the pretrained feature extractor is kept and a new classification 
+head with five outputs is trained first; some of the deeper layers are then unfrozen and 
+fine-tuned at a low learning rate. EdgeRetina follows this idea with two compact 
+--- PAGE 16 ---
+4 
+ 
+architectures, MobileNetV3Small (Howard et al., 2019) and EfficientNetB0 (Tan & Le, 
+2019), both of which are efficient enough to be trained and served on an ordinary 
+workstation. 
+1.3.3 Federated Learning and Privacy-Inspired Update Processing 
+In federated learning a server sends the current global model to several clients, each 
+client trains it on local data, and the server combines the results into an improved global 
+model. The standard combination rule is Federated Averaging (FedAvg), in which each 
+client's contribution is weighted by its number of training samples. Because the shared 
+quantity is a model update rather than an image, the raw data never leave the client. 
+Updates can nevertheless be inspected or inverted by a curious server, so a  common 
+precaution is to bound the size of every update by clipping its L2 norm and then to add 
+random Gaussian noise (Abadi et al., 2016; Geyer et al., 2017). When this is combined 
+with a formal privacy accountant it yields a differential privacy guarante e (Dwork & 
+Roth, 2014). EdgeRetina implements the clipping and noise steps but does not 
+implement a privacy accountant, so the project describes them as privacy -inspired 
+processing and makes no formal (ε, δ) claim. 
+1.3.4 Explainable Deep Learning 
+Gradient-weighted Class Activation Mapping (Grad-CAM) produces a coarse heatmap 
+showing which regions of an input image contributed most to the score of a chosen 
+class. For a retinal image the heatmap may highlight the optic disc, the macula or areas 
+with exudates. It is a visual aid for inspection. It is not a lesion segmentation and it does 
+not establish that the model is clinically right (Adebayo et al., 2018). The project treats 
+it accordingly. 
+1.4 Problem Statement 
+Diabetic retinopathy classification from fundus images presents several linked 
+challenges. Manual examination is time consuming when many images must be 
+reviewed. The APTOS 2019 dataset is imbalanced, with 1,805 No DR images against 
+only 193 Severe DR imag es, so a model can achieve a respectable accuracy while 
+performing poorly on the rarer and clinically more important classes. Variations in 
+brightness, focus and contrast between images further affect predictions. Finally, 
+collecting images from several ho spitals into one place conflicts with privacy 
+requirements, and the models that result are usually opaque. 
+--- PAGE 17 ---
+5 
+ 
+The problem addressed by EdgeRetina is therefore to build a system that 
+supports five-class DR classification, explains individual predictions, and demonstrates 
+distributed training with privacy -inspired update processing, all within a reliable 
+model-management and evaluation workflow that a user can operate through a web 
+interface. 
+1.5 Scope of the Project 
+EdgeRetina is a research prototype for privacy -aware diabetic retinopathy 
+classification. The scope covers retinal image validation, preprocessing, model training, 
+model evaluation, simulated federated learning, privacy -related update processing, 
+prediction with confidence estimation, Grad -CAM explanation and prediction -history 
+storage. The boundaries of the work are stated explicitly so that the results are not over-
+interpreted. 
+• The four federated clients are software simulations created from partitions of 
+one dataset. They are not real hospitals and the project does not demonstrate 
+deployment across institutions. 
+• Clipping and Gaussian noise are privacy -inspired operations. No privacy 
+accountant is implemented and no formally verified differential privacy 
+guarantee is claimed. Homomorphic encryption and secure aggregation are not 
+implemented. 
+• The reported test accuracy and macro -F1 values belong to the centralised 
+evaluation of the two architectures. They must not be read as the accuracy of 
+the federated global model. 
+• Grad-CAM heatmaps support visual inspection. They are not lesion 
+segmentations and they do not replace clinical assessment. 
+• The system is meant for academic and research use and is not a medical device 
+or a substitute for an ophthalmologist. 
+ 
+1.6 Proposed Approach and Main Contributions 
+The proposed system validates the APTOS 2019 images, preprocesses them by 
+resizing, contrast enhancement and normalisation, and divides them into training, 
+validation and test sets. Two architectures are trained and compared on the five -class 
+task. For the federated experiment the training data are divided among four simulated 
+--- PAGE 18 ---
+6 
+ 
+clients. Each client trains locally, its model update is clipped and perturbed with 
+Gaussian noise, and the server aggregates the processed updates with FedAvg to form 
+a global model that can be redistributed for further rounds. A prediction module returns 
+the predicted class, its confidence and the full class-probability distribution, and a Grad-
+CAM module overlays a heatmap on the image. 
+The main contributions of the project are summarised as follows. 
+• An end-to-end working prototype that integrates five -class DR classification, 
+simulated federated learning, privacy -inspired update processing and Grad -
+CAM in a single Flask application. 
+• A measured comparison of MobileNetV3Small (63.3% test accuracy, 42.0% 
+macro-F1) and EfficientNetB0 (71.1% test accuracy, 40.9% macro -F1) on a 
+common test set, with a confusion-matrix based analysis of per-class behaviour 
+under class imbalance. 
+• A modular software design in which dataset validation, preprocessing, training, 
+prediction, federated components, explanation and persistence are separate 
+services. 
+• A transparent statement of limitations, including the absence of a formal privacy 
+guarantee and of federated evaluation results, which keeps the claims of the 
+work accurate. 
+ 
+1.7 Organisation of the Report 
+Chapter 2 describes the project, sets out its goals and presents the literature survey. 
+Chapter 3 gives the technical specification, including hardware, software and 
+requirements. Chapter 4 presents the design approach, architecture, UML diagrams, 
+database design, applicable standards and design trade -offs. Chapter 5 covers the 
+dataset, preprocessing and model development. Chapter 6 explains federated learning, 
+the privacy -inspired update processing and Grad -CAM, with the formulas used. 
+Chapter 7 describes the implementation, the project schedule and the milestones. 
+Chapter 8 demonstrates the working application through screenshots. Chapter 9 reports 
+testing and results. Chapter 10 discusses limitations and future work, and Chapter 11 
+summarises the project. The references and Appendix A follow. 
+--- PAGE 19 ---
+7 
+ 
+CHAPTER 2 
+PROJECT DESCRIPTION, LITERATURE SURVEY AND GOALS 
+2.1 Project Description 
+EdgeRetina is a web -based research workspace for five -class diabetic retinopathy 
+classification. A user opens the application in a browser, uploads a retinal fundus image 
+and receives the predicted severity grade together with a confidence value and the 
+probability assigned to every class. A Grad -CAM overlay can be generated for the 
+prediction, and each prediction is saved with a timestamp so that it can be reviewed 
+later in a history page. A researcher uses the same interface to validate the dataset, run 
+centralised model training for MobileNetV3Small and EfficientNetB0, and run the 
+simulated federated training with privacy-inspired update processing. 
+Behind the interface the backend is divided into services for image validation 
+and preprocessing, model loading, training, prediction, evaluation, Grad -CAM 
+generation and database access. The federated component contains a client that 
+performs local traini ng and generates an update, a privacy processor that clips the 
+update and adds Gaussian noise, a server that receives the processed updates, and an 
+aggregator that combines them with FedAvg. The interface is intentionally candid about 
+the status of each result: it shows the best verified model and its measured test accuracy, 
+labels low-confidence predictions as uncertain, and describes the privacy component as 
+experimental. 
+2.2 Project Goals 
+The goals of the project are derived from the objectives in Chapter 1 and are stated here 
+in a form that can be checked at the end of the work, as shown in Table 2.1. 
+Table 2.1 Project Goals and Their Verification 
+Goal Description How it is verified 
+G1 Five-class DR classification using 
+two architectures 
+Test accuracy, macro-F1 and 
+confusion matrices on a held-out test 
+set 
+G2 Dataset validation and 
+preprocessing before training 
+Validation run in the training 
+workspace; preprocessing applied in 
+training and prediction 
+G3 Simulated federated learning with 
+four clients and FedAvg 
+Federated training run in the 
+application with the configured 
+number of rounds 
+--- PAGE 20 ---
+8 
+ 
+G4 Privacy-inspired update processing L2-norm clipping and Gaussian noise 
+applied to each client update before 
+aggregation 
+G5 Visual explanation of predictions Grad-CAM overlay generated for 
+supported predictions 
+G6 Usable web interface and history Functional test cases TC01–TC12 
+and screenshots of the working 
+application 
+ 
+2.3 Literature Survey 
+The literature relevant to EdgeRetina falls into five groups: deep learning for diabetic 
+retinopathy, federated learning and its use in medicine, differential privacy and privacy-
+aware federated learning, explainability, and efficient CNN architectures. Ta ble 2.2 
+lists the main works that were studied, with the merit of each and the limitation that is 
+relevant to this project. 
+Table 2.2 Summary of the Literature Survey 
+N
+o. 
+Work Merit Limitation relevant to 
+this project 
+1 Gulshan et al. (2016): 
+deep learning algorithm 
+for detection of DR in 
+retinal fundus photographs 
+Demonstrated that deep 
+learning can detect 
+referable DR from 
+fundus images with 
+high sensitivity and 
+specificity 
+Needs large labelled 
+data and centralised 
+training 
+2 Ting et al. (2017): deep 
+learning system for DR 
+and related eye diseases in 
+multiethnic populations 
+Showed performance 
+across several 
+populations and related 
+retinal diseases 
+Large scale training 
+needs substantial 
+labelled data and 
+compute 
+3 Gargeya & Leng (2017): 
+automated identification 
+of DR using deep learning 
+Automated detection of 
+DR from retinal 
+photographs 
+Interpretability and data 
+sharing remain open 
+4 McMahan et al. (2017): 
+communication-efficient 
+learning from 
+decentralised data 
+Introduced Federated 
+Averaging 
+Communication cost 
+and client heterogeneity 
+affect training 
+5 Rieke et al. (2020): the 
+future of digital health 
+with federated learning 
+Argues for federated 
+learning as a privacy-
+sensitive approach in 
+healthcare 
+Deployment needs 
+secure communication 
+and handling of 
+heterogeneous data 
+6 Sheller et al. (2020): 
+federated learning in 
+medicine 
+Showed multi-
+institutional model 
+Real deployments 
+involve complex 
+--- PAGE 21 ---
+9 
+ 
+training without sharing 
+patient data 
+institutional and 
+technical requirements 
+7 Raj et al. (2024): 
+federated learning for DR 
+diagnosis in under-
+resourced regions 
+Federated 
+EfficientNetB0 across 
+hospitals for five-level 
+DR grading, aimed at 
+low-resource clinics 
+Results are not directly 
+comparable with this 
+project because the data 
+and setting differ 
+8 Bhulakshmi & Rajput 
+(2024): FedDL 
+personalised federated 
+deep learning for DR 
+FedAvg across five 
+simulated clients on 
+fundus images, sharing 
+only parameters 
+Evaluated on small 
+public datasets (IDRiD, 
+STARE); only 
+parameters are shared 
+9 Abadi et al. (2016): deep 
+learning with differential 
+privacy 
+Introduced clipping, 
+noise and a moments 
+accountant for private 
+deep learning 
+Privacy brings a utility 
+trade-off and needs 
+careful parameter 
+choice 
+10 Dwork & Roth (2014): 
+algorithmic foundations of 
+differential privacy 
+Formal definitions and 
+mechanisms 
+Formal guarantees need 
+careful parameter 
+selection and 
+accounting 
+11 Selvaraju et al. (2017): 
+Grad-CAM 
+Class-discriminative 
+visual explanations 
+from CNNs 
+Coarse heatmaps; not 
+lesion segmentation 
+12 Howard et al. (2019): 
+searching for 
+MobileNetV3 
+Efficient architecture 
+for resource-
+constrained use 
+Smaller models may 
+trail larger ones on 
+complex tasks 
+13 Tan & Le (2019): 
+EfficientNet 
+Compound scaling of 
+depth, width and 
+resolution 
+Larger variants are 
+computationally heavy 
+14 Abràmoff et al. (2018): 
+pivotal trial of an 
+autonomous AI diagnostic 
+system for DR 
+Showed clinical 
+potential of AI in 
+primary-care DR 
+detection 
+Clinical use demands 
+validation, regulation 
+and workflow 
+integration 
+15 Malekzadeh et al. (2021): 
+Dopamine, differentially 
+private federated learning 
+on medical data 
+Combined federated 
+learning, DP-SGD and 
+secure aggregation on a 
+DR task 
+Requires a complete 
+privacy mechanism and 
+accounting that 
+EdgeRetina does not 
+implement 
+ 
+2.3.1 Deep Learning for Diabetic Retinopathy 
+Gulshan et al. (2016) trained a deep CNN on a large collection of graded fundus 
+photographs and reported high sensitivity and specificity for detecting referable 
+diabetic retinopathy. Ting et al. (2017) extended the idea to multiethnic populations and 
+to r elated eye diseases such as glaucoma and age -related macular degeneration, 
+showing that a single approach can generalise across different groups. Gargeya and 
+--- PAGE 22 ---
+10 
+ 
+Leng (2017) described a data -driven method for automated identification of DR from 
+retinal photographs. Abràmoff et al. (2018) went further and evaluated an autonomous 
+AI diagnostic system in primary-care offices, which illustrates both the promise of the 
+technology and the regulatory and clinical validation that real deployment requires. 
+These works establish the feasibility of the classification task. They all rely on large, 
+centrally collected datasets, which is the assumption that the federated componen t of 
+EdgeRetina questions. 
+2.3.2 Federated Learning in Healthcare 
+McMahan et al. (2017) introduced Federated Averaging, in which clients perform 
+several local training steps and the server averages the resulting models weighted by 
+client data size. Kairouz et al. (2021) and Li et al. (2020) survey the open problems, 
+including communication cost, statistical heterogeneity between clients and system 
+constraints. In medicine, Rieke et al. (2020) set out the opportunities and the practical 
+hurdles of federated digital health, and Sheller et al. (2020) demonstrated multi -
+institutional model training for brain tumour segmentation without sharing patient data. 
+Applications to retinal imaging are more recent. Raj et al. (2024) built a federated 
+EfficientNetB0 system for five-level DR grading across several hospitals and aimed it 
+at low-resource clinics. Bhulakshmi and Rajput (2024) proposed FedDL, which applies 
+federated averaging across simulated clients with different CNN architectures on public 
+fundus datasets. These studies show that federated training is a realistic way to use  
+distributed retinal data. EdgeRetina follows the same family of approaches but 
+concentrates on a compact, runnable prototype in which the privacy -inspired update 
+processing and the explanation are visible in the interface. 
+2.3.3 Differential Privacy and Privacy-Aware Federated Learning 
+Differential privacy gives a mathematical definition of what it means for the output of 
+an algorithm to reveal little about any single individual (Dwork & Roth, 2014). Abadi 
+et al. (2016) showed how to train deep networks with differential privacy by clipp ing 
+per-example gradients, adding Gaussian noise and tracking the cumulative privacy loss 
+with a moments accountant. Geyer et al. (2017) applied the same ideas at the client 
+level in federated learning, and Malekzadeh et al. (2021) combined federated learning, 
+differentially private training and secure aggregation on a diabetic retinopathy task. Zhu 
+et al. (2019) demonstrated that shared gradients can be inverted to reconstruct training 
+images, which explains why sharing updates instead of data is not by it self sufficient. 
+--- PAGE 23 ---
+11 
+ 
+The common thread is that clipping bounds the influence of any one participant and 
+noise masks what remains, but a formal guarantee also needs a privacy accountant and 
+an analysis of the exact mechanism. EdgeRetina implements the first two ingredients 
+and openly omits the third. 
+2.3.4 Explainability and Efficient Architectures 
+Selvaraju et al. (2017) proposed Grad -CAM, which weights the feature maps of a 
+convolutional layer by the gradient of a class score and produces a heatmap over the 
+input. Adebayo et al. (2018) warn that saliency methods must be sanity-checked, which 
+supports the cautious interpretation adopted in this report. On the architecture side, 
+MobileNetV3 (Howard et al., 2019) uses a hardware -aware search and efficient 
+building blocks to give a small and fast network, whereas EfficientNet (Tan & Le, 
+2019) scales dep th, width and resolution together with a compound coefficient. Both 
+are available as pretrained models in Keras (Chollet, 2015), which makes them natural 
+candidates for transfer learning on a modest retinal dataset. 
+2.4 Findings from the Literature Survey 
+The survey leads to four findings. First, deep learning is an effective approach to 
+automated retinal image analysis, but the strongest results rely on large centralised 
+datasets. Second, federated learning is a credible way to use data held by several 
+institutions, and FedAvg is the standard baseline. Third, update sharing leaks 
+information, so privacy -oriented processing is advisable, but formal privacy requires 
+accounting, and privacy mechanisms trade utility for protection. Fourth, Grad -CAM 
+makes CNN pr edictions easier to inspect while remaining a coarse and non -clinical 
+visual aid. 
+2.5 Research Gap and Positioning of EdgeRetina 
+DR classification, federated learning, privacy -oriented processing and explainability 
+are often studied separately or in pairs. A student -scale, fully runnable system that 
+brings all four together, exposes them through a usable web interface and reports it s 
+own limits honestly is less common. EdgeRetina fills this gap as a prototype. It does 
+not claim to beat published accuracy figures, to protect privacy formally, or to be 
+validated for clinical use. Its contribution is the integration and the transparent 
+evaluation workflow. 
+--- PAGE 24 ---
+12 
+ 
+2.6 Expected Outcomes and Deliverables 
+At the end of the project the following deliverables are expected: a working Flask 
+application that can be run locally; trained and saved MobileNetV3Small and 
+EfficientNetB0 models with their measured test metrics; a simulated federated training 
+workflow with clipping, Gaussian noise and FedAvg; Grad -CAM explanations in the 
+prediction interface; a SQLite prediction history; the UML diagrams, evaluation figures 
+and screenshots that document the design and the results; and this report. The expected 
+scientific outcome is a clear, honest comparison of the two architectures under class 
+imbalance and a demonstration that the federated, privacy -inspired and explainable 
+components can be combined in one system. 
+--- PAGE 25 ---
+13 
+ 
+CHAPTER 3 
+TECHNICAL SPECIFICATION 
+3.1 Existing System and Proposed System 
+In the conventional workflow, retinal images are collected at a central location, labelled 
+by specialists and used to train a model on one machine. The resulting model returns 
+only a class label. There is no mechanism to keep data at the source, to bound what the 
+training updates reveal, or to show why a particular label was returned. The proposed 
+EdgeRetina system keeps the centralised baseline for comparison, adds a simulated 
+federated pipeline with clipping and Gaussian noise, and adds Grad-CAM explanations 
+and a prediction history to the interface. 
+3.2 Functional Requirements 
+The functional requirements were identified from the objectives and are listed in Table 
+3.1. Each requirement is traceable to a module in the design and to at least one test case 
+in Chapter 9. 
+Table 3.1 Functional Requirements 
+ID Requirement Description 
+FR1 Dataset validation The system shall validate retinal image files, labels 
+and the dataset structure before training. 
+FR2 Image 
+preprocessing 
+The system shall preprocess images using resizing, 
+contrast enhancement and normalisation. 
+FR3 Model training The system shall train deep learning models for five-
+class DR classification. 
+FR4 Federated training The system shall simulate multiple clients and 
+perform local model training. 
+FR5 Model aggregation The system shall combine client updates using 
+Federated Averaging. 
+FR6 Privacy processing The system shall apply update clipping and Gaussian 
+noise to local updates before aggregation. 
+FR7 Prediction The system shall classify an uploaded retinal image 
+into one of five DR severity categories. 
+FR8 Confidence The system shall display the prediction confidence 
+and the class probabilities. 
+FR9 Explainability The system shall generate Grad-CAM visual 
+explanations. 
+FR10 History The system shall store prediction results with 
+timestamps in SQLite and display them on request. 
+ 
+--- PAGE 26 ---
+14 
+ 
+3.3 Non-Functional Requirements 
+Table 3.2 Non-Functional Requirements 
+Attribute Requirement 
+Performance Predictions should be returned within a reasonable time on the 
+available hardware. 
+Usability A user should be able to upload an image and understand the 
+result without training. 
+Reliability Invalid files must be rejected with a clear message and must 
+not crash the application. 
+Security and 
+privacy 
+Uploaded images should not be exposed unnecessarily, and 
+training data of the simulated clients should be kept separate. 
+Maintainability Backend functions are split into modular services that can be 
+changed independently. 
+Scalability The federated design should allow additional simulated clients 
+to be added. 
+Explainability Grad-CAM visualisation should accompany the prediction 
+result. 
+Honesty of 
+reporting 
+The interface should show verified metrics only and label 
+uncertain predictions and experimental components as such. 
+ 
+These attributes follow the quality characteristics of ISO/IEC 25010 
+(performance efficiency, usability, reliability, security, maintainability), and the 
+requirements are written in the spirit of ISO/IEC/IEEE 29148. 
+3.4 Hardware Requirements 
+Table 3.3 Hardware Requirements 
+Component Minimum Recommended 
+Processor Intel Core i5 or equivalent Intel Core i7 / AMD Ryzen 7 or 
+equivalent 
+Memory 8 GB RAM 16 GB RAM or higher 
+Storage At least 20 GB free space SSD storage 
+Graphics Not required for prediction NVIDIA GPU with sufficient 
+VRAM for training 
+Operating 
+system 
+Windows or Linux Windows or Linux 
+Network Internet for installation and 
+dataset access 
+Stable internet connection 
+ 
+Training deep networks on a CPU is possible but slow, which is why a GPU is 
+recommended for repeated experiments. Prediction on a single image is light enough 
+for a standard laptop. 
+--- PAGE 27 ---
+15 
+ 
+3.5 Software Requirements 
+Table 3.4 Software and Technologies 
+Software / Technology Purpose 
+Python Main programming language 
+Flask Web application backend and routing 
+TensorFlow / Keras Model development, training and inference 
+OpenCV Image reading, resizing and CLAHE contrast 
+enhancement 
+NumPy Numerical computation, including update clipping 
+and noise 
+Pandas Dataset handling and label tables 
+scikit-learn Metrics, confusion matrices and dataset splitting 
+utilities 
+Matplotlib Plots and figures 
+SQLite Storage of prediction history and model information 
+HTML5, CSS3, JavaScript Frontend structure, styling and interaction 
+VS Code Development environment 
+Git / GitHub Version control 
+ 
+The libraries are standard and widely documented: TensorFlow (Abadi et al., 
+2016) with Keras (Chollet, 2015), OpenCV (Bradski, 2000), NumPy (Harris et al., 
+2020), pandas (McKinney, 2010), scikit -learn (Pedregosa et al., 2011), Matplotlib 
+(Hunter, 2007), Fl ask (Grinberg, 2018) and SQLite (SQLite Consortium, n.d.). The 
+exact installed versions are recorded in the project's requirements file, which is 
+reproduced in Appendix A. 
+3.6 Assumptions and Constraints 
+• The APTOS 2019 labels are assumed to be correct, and the images are assumed 
+to be representative enough for a prototype. 
+• The four federated clients are simulated from one dataset and therefore share 
+the same acquisition characteristics, which is easier than real multi -hospital 
+data. 
+• The application runs locally on a single machine; it is not deployed as a multi -
+user cloud service. 
+• The privacy-inspired mechanism has no accountant, so no numerical privacy 
+budget can be stated. 
+--- PAGE 28 ---
+16 
+ 
+CHAPTER 4 
+DESIGN APPROACH AND DETAILS 
+4.1 Design Approach and Methodology 
+EdgeRetina is designed as a layered, modular application. The layers separate what the 
+user sees, what the server does, which models are used, where files and results are kept, 
+and where predictions are stored. This separation makes it possible to change t he 
+interface without touching the models, and to replace a model without changing the 
+routes. The design follows an object-oriented decomposition into services and classes, 
+documented with UML use-case and class diagrams as required by the review format. 
+4.1.1 Overall System Architecture 
+Fig. 4.1 shows the architecture of the system. The topmost layer is the web interface 
+built with Flask templates, HTML, CSS and JavaScript. It contains the dashboard and 
+overview page, the image upload and prediction page, and the prediction-history page. 
+Requests from the interface are passed to the Flask backend, which contains three 
+groups of functionality: image validation and preprocessing, the prediction service for 
+the supported models, and the training service that trains models and saves their 
+metrics. The backend calls the deep learning models, MobileNetV3Small and 
+EfficientNetB0, both configured for five -class classification. Below the models is the 
+dataset and model management layer, which holds the APTOS 2019 dataset and its 
+train, validation an d test splits, the training results (model checkpoints in the .keras 
+format, training history, metrics and the ensemble status file), and the preprocessed 
+images used for training and inference. The SQLite database stores prediction records 
+and model infor mation. The whole application runs in the local environment, on a 
+Windows machine in the development setup. 
+--- PAGE 29 ---
+17 
+ 
+ 
+Fig. 4.1 System Architecture of EdgeRetina 
+Processing requests flow downwards and results flow back upwards. For a 
+prediction request the interface sends the uploaded image to the backend, the backend 
+validates and preprocesses it, a model is loaded and run, and the class probabilities are 
+returned to the interface and saved in the database. For a training request the backend 
+reads the prepared dataset, trains the selected architectures and writes checkpoints and 
+metrics into the model management layer, from which the interface later reads the 
+verified results. 
+
+--- PAGE 30 ---
+18 
+ 
+4.1.2 End-to-End Methodology 
+The methodology that connects the layers is the sequence of stages in Fig. 4.2: dataset 
+collection, dataset validation, image preprocessing, dataset partitioning, model 
+development, local client training, privacy -inspired update processing, federated 
+aggregation, global model evaluation, prediction, Grad -CAM explanation and 
+prediction-history storage. The first stages prepare trustworthy input, the middle stages 
+produce and combine models, and the final stages turn a model into a usable and 
+inspectable service. 
+ 
+Fig. 4.2 End-to-End Methodology of the EdgeRetina System 
+
+--- PAGE 31 ---
+19 
+ 
+4.1.3 Use-Case Diagram 
+ 
+Fig. 4.3 Use-Case Diagram of EdgeRetina 
+4.1.4 Class Diagram 
+The class diagram in Fig. 4.4 shows the main classes and how they depend on each 
+other. ImageProcessor validates an image, resizes it, applies CLAHE and normalises 
+it. ModelLoader loads the MobileNetV3Small model, the EfficientNetB0 model or the 
+global federated model. MobileNetV3Model and EfficientNetB0Model each build, 
+train, predict and evaluate. PredictionService preprocesses input, predicts the class, 
+calculates the confidence and returns the probabilities, and it uses GradCAMService 
+to generate and overlay a heatmap and Database to save a prediction and fetch the 
+history. On the federated side, FederatedClient trains a local model, generates an 
+update and sends it; PrivacyProcessor clips the update and adds Gaussian noise; 
+FederatedServer receives and aggregates updates, generates the global model and 
+distributes it; and FedAvgAggregator calculates the weights and performs the 
+aggregation. 
+
+--- PAGE 32 ---
+20 
+ 
+ 
+Fig. 4.4 Class Diagram of EdgeRetina 
+4.1.5 Prediction Workflow 
+The prediction workflow in Fig. 4.5 begins when the user uploads an image through 
+the browser. The image is validated to reject unsupported or unreadable files and is then 
+preprocessed with the same steps that were used for training. The selected model is 
+loaded, the softmax probabilities are computed, and the class with the highest 
+probability is reported together with its confidence. A Grad-CAM heatmap is generated 
+for the prediction and the result is stored in SQLite so that it appears in the history page. 
+ 
+Fig. 4.5 Prediction Workflow 
+
+--- PAGE 33 ---
+21 
+ 
+4.1.6 Training and Federated Workflows 
+Centralised training takes the training and validation sets, builds a model from a 
+pretrained backbone, trains it in stages and evaluates it on the untouched test set; the 
+checkpoint and the metrics are saved. Federated training starts from a global model,  
+distributes it to four simulated clients, lets each client train on its partition, processes 
+each update, and aggregates the processed updates on the server. The federated 
+workflow is described in detail in Chapter 6. 
+4.2 Database Design 
+A small relational schema is sufficient for the application. The prediction history is 
+stored in a SQLite table whose columns, as shown in the history page of the application, 
+are listed in Table 4.1. A second logical store keeps information about the trai ned 
+models, namely model details and evaluation metrics, which are also saved as files by 
+the training service. 
+Table 4.1 Prediction Record Structure 
+Field Content Purpose 
+ID Auto-incremented record identifier 
+(shown as #59, #58, …) 
+Unique reference of a 
+prediction 
+Image Stored image file name Links a record to the 
+uploaded image 
+Prediction Predicted DR class Result of the model 
+Confidence Maximum class probability (percent) Shows how certain the 
+model was 
+Model Model that produced the prediction 
+(for example EfficientNetB0) 
+Traceability of the result 
+Timestamp Date and time of the prediction Chronological history and 
+filtering 
+ 
+The history page offers a text search on the record fields and a class filter, which 
+are implemented as queries on this table. SQLite is serverless, needs no separate 
+installation and stores the database in a single file, which suits a local research 
+prototype. 
+4.3 Codes and Standards 
+The project follows a set of recognised standards and conventions, summarised in Table 
+4.2. 
+--- PAGE 34 ---
+22 
+ 
+Table 4.2 Codes, Standards and Conventions Followed 
+Area Standard / convention Use in the project 
+Software 
+quality 
+ISO/IEC 25010:2011 Quality attributes behind the non-
+functional requirements 
+Requirements ISO/IEC/IEEE 29148:2018 Structure of functional 
+requirements FR1–FR10 
+Modelling UML 2.x Use-case and class diagrams 
+Python code PEP 8 (van Rossum et al., 
+2001) 
+Naming and layout of the source 
+code 
+Web HTML5, CSS3, 
+ECMAScript 
+Frontend implementation 
+Clinical grading International DR severity 
+scale (Wilkinson et al., 2003) 
+Meaning of the five class labels 
+Model files Keras .keras format Saving and loading trained 
+models 
+Referencing APA 7th edition Citations and reference list of this 
+report 
+ 
+4.4 Constraints, Alternatives and Trade-offs 
+Every important design decision involved a choice between alternatives. Table 4.3 
+records the main ones with the reason for the choice made. 
+Table 4.3 Design Alternatives and Trade-offs 
+Decision Alternatives Choice and reason 
+Model family Larger CNNs or vision 
+transformers 
+MobileNetV3Small and EfficientNetB0: 
+small enough to train and serve locally, 
+and both have pretrained weights 
+Training 
+setting 
+Only centralised 
+training 
+Centralised baseline plus simulated 
+federated training: keeps a reference for 
+comparison 
+Federated 
+clients 
+Real hospitals Simulated clients: real data sharing 
+agreements are out of scope for a 
+student project 
+Privacy 
+mechanism 
+Formal DP-SGD with 
+accountant, secure 
+aggregation 
+Clipping and Gaussian noise: simple to 
+implement and explain; no formal 
+guarantee is claimed 
+Explainability Other saliency methods Grad-CAM: widely used and compatible 
+with CNNs 
+Web 
+framework 
+Django, FastAPI Flask: lightweight and easy to structure 
+into routes and services 
+Storage Client-server database SQLite: zero configuration for local use 
+--- PAGE 35 ---
+23 
+ 
+Reporting 
+metric 
+Accuracy only Accuracy together with macro-F1 and 
+confusion matrices because of class 
+imbalance 
+ 
+The main technical trade -off is between accuracy and the behaviour on rare 
+classes. The more accurate model is not necessarily the better one for the clinically 
+important grades, which is why the evaluation in Chapter 9 looks beyond overall 
+accuracy. A second trade-off concerns privacy and utility: stronger clipping and larger 
+noise protect the updates more but reduce the information that reaches the server. 
+4.5 Data Flow and Interaction Between Components 
+Two data flows dominate the system. In the prediction flow  the browser posts an 
+uploaded image to the prediction route of the Flask backend. The backend passes it to 
+the image processor for validation and preprocessing, asks the model loader for the 
+selected trained model, and passes the preprocessed array to the prediction service. The 
+service returns the class probabilities, from which the predicted class and confidence 
+are derived. If the user requests the explanation, the Grad-CAM service reuses the same 
+model and image to compute the heatmap. The database service then writes the record, 
+and the route returns the result to the page, which renders the class, the confidence, the 
+probability bars and the overlay. 
+In the training flow  the browser asks the training route to start a run. The 
+backend validates the dataset, prepares the preprocessed images, trains the selected 
+architectures in two stages, evaluates them on the test split and writes the checkpoints 
+and metrics into the mode l management layer. While the run is in progress the page 
+polls the backend for status, which is why the interface can show a progress bar and a 
+live log. When the run has finished, the prediction page reads the saved metrics to state 
+which model is the best verified model. 
+In the federated flow the training route creates four client objects, each holding 
+one partition of the training data, and a server object holding the global model. For each 
+round the server distributes the model, every client trains and produces an update, the 
+privacy process or clips and perturbs the update, and the aggregator combines the 
+processed updates. Only updates cross the boundary between a client and the server in 
+this flow; the image partitions stay inside the client objects. 
+--- PAGE 36 ---
+24 
+ 
+4.6 Security and Privacy Considerations in the Design 
+The design takes a small number of deliberate precautions. Uploaded files are validated 
+before they reach the model, which limits the effect of malformed input. The interface 
+and the backend never present unverified numbers as results: the prediction page quotes 
+only metrics that were produced by the evaluation step. The data of the simulated clients 
+are kept in separate partitions and are not mixed during local training. Update clipping 
+bounds the influence of each client, and Gaussian noise perturbs what leaves the client. 
+These measures improve the posture of the prototype, but they are not a security 
+certification. In particular, the application runs locally without authentication, the 
+uploaded images are stored on the local machine, and the privacy processing carries no 
+formal guarantee, as discussed in Chapter 6. 
+4.7 Detailed Description of the Main Classes 
+This section describes the responsibility of each class of Fig. 4.4 in more detail. 
+ImageProcessor. It is the only place where raw images are handled. 
+validate_image checks that a file exists, can be decoded and has a supported format. 
+resize_image brings the image to the input size of the network. apply_CLAHE 
+enhances the local contrast, and normalize_ image scales the pixel values. Because 
+training and prediction both call this class, they apply an identical transformation. 
+ModelLoader. It hides where the trained models are stored. load_mobilenet 
+and load_efficientnet return the two centralised models, and load_global_model returns 
+the model produced by federated training. The prediction service asks the loader for a 
+model and does not need to know about file paths. 
+MobileNetV3Model and EfficientNetB0Model.  Both classes offer the same 
+four operations: build_model attaches a five-class head to the pretrained backbone, train 
+runs the two training stages, predict returns the class probabilities for a batch, and 
+evaluate computes the test metrics. The common interface makes it easy to compare the 
+architectures or to add a third one. 
+PredictionService. It coordinates a single prediction. preprocess_input calls the 
+image processor, predict_class runs the model, calculate_confidence takes the largest 
+probability, and get_probabilities returns all five. It also calls the Grad -CAM service 
+and the database service so that the route handler stays short. 
+--- PAGE 37 ---
+25 
+ 
+GradCAMService. generate_heatmap computes the heatmap of the predicted 
+class from the gradients of the last convolutional feature maps, and overlay_heatmap 
+resizes it and blends it with the original image. 
+Database. save_prediction inserts a row with the image name, the predicted 
+class, the confidence, the model name and the timestamp. get_history returns the rows 
+for the history page, optionally filtered. 
+FederatedClient. train_local_model fits the received global model on the client 
+partition, generate_update computes the difference between the trained and the received 
+weights, and send_update passes the processed update to the server. 
+PrivacyProcessor. clip_update scales an update so that its L2 norm does not 
+exceed the clipping norm, and add_gaussian_noise adds zero-mean Gaussian noise with 
+the configured standard deviation. The two functions are applied in this order. 
+FederatedServer and FedAvgAggregator.  The server receives the updates, 
+calls the aggregator to calculate the sample-based weights and to combine the updates, 
+generates the global model and distributes it to the clients for the next round. 
+--- PAGE 38 ---
+26 
+ 
+CHAPTER 5 
+DATASET, PREPROCESSING AND MODEL DEVELOPMENT 
+5.1 The APTOS 2019 Dataset 
+The project uses the APTOS 2019 Blindness Detection dataset, a collection of retinal 
+fundus photographs released for a public challenge (Kaggle, 2019). Each image carries 
+a diagnosis label from 0 to 4 that corresponds to the five DR severity classes: Class  0 
+No DR, Class 1 Mild, Class 2 Moderate, Class 3 Severe and Class 4 Proliferative DR. 
+The dataset used in the project contains 3,662 labelled images. Table 5.1 gives the 
+number of images in each class and the share of the whole dataset. 
+Table 5.1 Class Distribution of the APTOS 2019 Dataset Used 
+DR category Label Images Share of dataset (%) 
+No DR 0 1,805 49.3 
+Mild DR 1 370 10.1 
+Moderate DR 2 999 27.3 
+Severe DR 3 193 5.3 
+Proliferative DR 4 295 8.1 
+Total  3,662 100.0 
+ 
+Fig. 5.1 shows the class composition as it appears in the evidence dashboard of 
+the application. The dataset is clearly imbalanced: the largest class (No DR) is about 
+9.35 times as large as the smallest (Severe DR), a ratio that the dashboard reports as the 
+class-imbalance indicator. Mild and Severe DR together make up only about 15% of 
+all images. This imbalance is the most important property of the data for the rest of the 
+project, because a model that favours the majority class can still obtain a good ov erall 
+accuracy. 
+--- PAGE 39 ---
+27 
+ 
+ 
+Fig. 5.1 Dataset Composition by DR Grade 
+5.2 Dataset Validation 
+Before any training takes place, the dataset is validated so that corrupted or mismatched 
+files do not silently enter the pipeline. The validation step is the first action of the 
+training workspace ("Validate APTOS files") and checks the points in Table 5.2. Files 
+that fail the checks are excluded from processing. 
+Table 5.2 Dataset Validation Checks 
+Check Purpose 
+Image file availability Every labelled image must exist on disk 
+Supported image formats Only formats accepted by the image reader are 
+processed 
+Image readability Unreadable or corrupt files are detected and removed 
+Corresponding labels Every image must have a diagnosis label and every 
+label an image 
+Missing or invalid files Reported to the user before training starts 
+Dataset structure Expected folders and label table must be present 
+ 
+The same validation idea is applied at prediction time to uploaded images. The 
+upload page states that JPEG or PNG files are accepted and that quality checks are 
+applied, so that an unsuitable file produces a validation message instead of a failure. 
+
+--- PAGE 40 ---
+28 
+ 
+5.3 Image Preprocessing 
+Fundus photographs differ in size, illumination and contrast. Preprocessing brings them 
+into a consistent form so that the network sees comparable inputs. The preprocessing 
+pipeline consists of the stages in Table 5.3. 
+Table 5.3 Preprocessing Pipeline 
+Stage Description 
+Image loading The image is read from disk or from the upload stream 
+Resizing The image is resized to the fixed input size expected by the 
+network 
+Contrast 
+enhancement 
+Contrast Limited Adaptive Histogram Equalization 
+(CLAHE) is applied where applicable (Zuiderveld, 1994) 
+Pixel normalisation Pixel values are scaled to the range expected by the model 
+Format conversion The array is converted to the batch format required by Keras 
+ 
+CLAHE improves local contrast by equalising the histogram in small tiles of 
+the image while limiting noise amplification. In retinal images it makes vessels, 
+exudates and haemorrhages easier to distinguish from the background. The 
+preprocessing code is shared between training and prediction, so that a prediction at run 
+time uses exactly the transformation that the model saw during training. The exact input 
+dimensions and CLAHE parameters are defined in the project configuration and are 
+listed in Table 5.6. 
+5.4 Dataset Partitioning 
+The validated dataset is divided into training, validation and test subsets. The training 
+set is used to fit the model, the validation set to monitor training and to choose when to 
+stop, and the test set is held out for the final evaluation. Fig. 5.2 shows the class balance 
+in the three subsets as produced by the application: the classes appear in similar 
+proportions in all of them, which suggests that the split is stratified by diagnosis grade. 
+The confusion matrices in Chapter 9 sum to 550 test images (271 No DR, 56 Mild, 150 
+Moderate, 29 Severe and 44 Proliferative), which is 15% of the 3,662 images, so the 
+split corresponds approximately to 70% training, 15% validation and 15% testing. 
+--- PAGE 41 ---
+29 
+ 
+ 
+Fig. 5.2 Class Balance Across Training, Validation and Test Splits 
+For the federated experiment the training data are further divided among four 
+simulated clients named Hospital A, B, C and D. Each client keeps its own partition 
+and trains only on it. The clients do not exchange images. Because the clients are 
+partitions of one dataset and not independent institutions, the simulation reproduces the 
+workflow of federated learning but not the full heterogeneity of real hospitals. 
+5.5 Model Architectures 
+5.5.1 Transfer Learning 
+Both architectures are used through transfer learning. A backbone pretrained on a large 
+image collection supplies general visual features such as edges, textures and shapes. A 
+new classification head with five softmax outputs is attached. Training takes pl ace in 
+two stages, labelled "head" and "fine_tune" in the training log: first only the new head 
+is trained while the backbone is kept fixed, and then the backbone is fine-tuned so that 
+its features adapt to retinal images. This is the usual way of obtaining good results from 
+a small dataset (Yosinski et al., 2014). 
+5.5.2 MobileNetV3Small 
+MobileNetV3Small (Howard et al., 2019) is a lightweight CNN designed for efficient 
+computation. It combines inverted residual blocks with squeeze -and-excitation 
+modules and uses the hard -swish activation, and its architecture was refined by 
+
+--- PAGE 42 ---
+30 
+ 
+hardware-aware neural architecture search. It has few parameters, so it trains quickly 
+and needs little memory, which makes it suitable where computing resources are 
+limited, for example on edge devices. In EdgeRetina it is adapted to five -class 
+classification by replacing the original output layer. 
+5.5.3 EfficientNetB0 
+EfficientNetB0 (Tan & Le, 2019) is the baseline network of the EfficientNet family. Its 
+design uses a compound scaling rule that increases depth, width and input resolution 
+together in a balanced way rather than scaling a single dimension. It is somewhat 
+heavier than MobileNetV3Small but is known for a strong accuracy -to-size ratio. It is 
+used here as the second architecture, so that the effect of model capacity on the DR task 
+can be compared. 
+Table 5.4 Comparison of the Two Architectures Used 
+Aspect MobileNetV3Small EfficientNetB0 
+Design focus Speed and small memory 
+footprint 
+Accuracy per parameter 
+through compound scaling 
+Output layer Five-class softmax Five-class softmax 
+Training Head training then fine-
+tuning 
+Head training then fine-
+tuning 
+Reported test 
+accuracy 
+63.3% 71.1% 
+Reported macro-F1 42.0% 40.9% 
+ 
+5.6 Output Layer, Probabilities and Confidence 
+The final layer of each model produces five raw scores (logits), one for each class. The 
+softmax function in Eqn. 5.1 converts the scores into probabilities that are positive and 
+sum to one. In the equation, z i is the raw score of class i and p i is its probability. The 
+predicted class is the one with the largest probability and the confidence is that largest 
+value. This is what the prediction page shows as the headline result and as the list of 
+class probabilities. 
+ 𝑝𝑖 =
+𝑒𝑧𝑖
+∑ 𝑒𝑧𝑗5
+𝑗=1
+ (5.1) 
+A high confidence means that the model assigns most of the probability to one 
+class; it does not guarantee that the prediction is correct. The interface therefore flags 
+predictions with low confidence. In the example of Fig. 8.7, a Severe DR prediction 
+--- PAGE 43 ---
+31 
+ 
+with a confidence of only 33.2% is labelled as an uncertain prediction. 
+5.7 Model Training 
+Training minimises a classification loss on the training set while the validation set is 
+used to monitor generalisation. For a multi -class problem with one -hot labels y i the 
+categorical cross-entropy in Eqn. 5.2 is the standard loss. The evidence dashboard notes 
+that the class imbalance motivated experiments with weighted and focal losses (Lin et 
+al., 2017), in which rare classes receive more weight. 
+ 𝐿 = − ∑ 𝑦𝑖
+5
+𝑖=1 log𝑝𝑖 (5.2) 
+The training workspace of the application presents the pipeline as a numbered 
+chain of steps that begins with validating the APTOS files and ends with a multi-model 
+training run, which trains both architectures and then evaluates them on the untouched 
+test set. The interface states that live batch accuracy is temporary and that final accuracy 
+appears only after validation and test evaluation. Models and metrics are saved by the 
+training service, together with a status file for the verified models (ensemble_status.json 
+in the architecture of Fig. 4.1); the prediction page then names the best verified model 
+and lists the measured accuracy of each available model. Table 5.5 reproduces the per-
+epoch training and validation accuracy recorded by the application fo r the stages that 
+were logged. 
+Table 5.5 Recorded Training and Validation Accuracy by Stage 
+Model Stage Epoc
+h 
+Training 
+accuracy 
+Validation 
+accuracy 
+Centralized 
+MobileNetV3Small 
+head 1 37.5% 61.4% 
+Ensemble 
+MobileNetV3Small 
+head 1 30.7% 61.9% 
+Ensemble 
+MobileNetV3Small 
+head 2 54.3% 61.9% 
+Ensemble 
+MobileNetV3Small 
+fine_tune 1 35.6% 62.5% 
+Ensemble EfficientNetB0 head 1 57.2% 71.2% 
+Ensemble EfficientNetB0 head 2 70.6% 72.1% 
+Ensemble EfficientNetB0 fine_tune 1 46.0% 72.5% 
+ 
+The table shows that validation accuracy is already higher than the batch 
+training accuracy in the first epochs, which is expected because training accuracy is a 
+--- PAGE 44 ---
+32 
+ 
+running average over batches while the weights are still changing and, in the fine-tuning 
+stage, a lower accuracy can appear temporarily when previously frozen layers start to 
+change. EfficientNetB0 reaches a validation accuracy of 72.5% in the logged fine -
+tuning epoch, and MobileNetV3Small stays near 62%. These validation values agree 
+in ordering with the final test accuracies of 71.1% and 63.3%. 
+ 
+5.8 Handling Class Imbalance 
+Because the five classes differ so much in size, the choice of training strategy and of 
+evaluation metric matters as much as the choice of architecture. Several standard 
+remedies exist. Class weighting  multiplies the loss of each sample by a weight 
+inversely related to the frequency of its class, so that errors on rare classes cost more. 
+Focal loss (Lin et al., 2017) down-weights the loss of easy, well-classified examples so 
+that training concentrates on hard ones, which are often from the minority classes. 
+Balanced sampling  draws minority -class images more often in each epoch, and 
+targeted augmentation (rotations, flips, brightness changes) creates additional variety 
+for the rare grades. The dashboard of the application states that the imbalance of the 
+data motivated weighted and focal-loss experiments, which shows that the problem was 
+recognised during development. 
+The results reported in Chapter 9 show that the imbalance is still visible in the 
+final models, since the recall of Mild and Severe DR remains very low. For this reason 
+the project reports macro -F1 and the confusion matrix beside the accuracy. A model 
+that predicted only the majority class would already obtain an accuracy of about 49% 
+on this dataset (1,805 of 3,662 images), and the accuracies of 63.3% and 71.1% have 
+to be judged against this reference level, not against 20%, the chance level for five 
+balanced classes. 
+--- PAGE 45 ---
+33 
+ 
+CHAPTER 6 
+FEDERATED LEARNING, PRIVACY-INSPIRED PROCESSING AND 
+EXPLAINABILITY 
+6.1 Motivation for Federated Learning 
+In the centralised baseline, all images are in one place. That is convenient for training, 
+but in real healthcare it would mean that every hospital exports patient images. 
+Federated learning inverts the arrangement: the model travels to the data instead of the 
+data travelling to the model. Each hospital keeps its images, trains the shared model 
+locally and returns only the result of that training. The server never needs to see an 
+image. This is the reason why federated learning is attractive for medical ima ging 
+(Rieke et al., 2020; Sheller et al., 2020) and why EdgeRetina includes a simulation of 
+it. 
+6.2 Simulated Federated Architecture 
+The federated component of EdgeRetina has four simulated clients, Hospital A, B, C 
+and D, and one federated server. The clients are software objects, each owning a 
+partition of the training data. The server holds the global model. Fig. 6.1 summarises 
+one round. The server distributes the current global model; every client trains it on its 
+own partition; every client then clips and perturbs its update; and the server aggregates 
+the processed updates with FedAvg to produce the next global model. The training page 
+of the application runs this cycle for a configurable number of aggregation rounds, 
+whose default is five, with the explanation that five rounds give a useful learning trend. 
+--- PAGE 46 ---
+34 
+ 
+ 
+Fig. 6.1 One Round of the Simulated Federated Workflow 
+It is important to be precise about what is simulated. The four clients run on the 
+same machine and use partitions of the same dataset. The network, the institutional 
+differences and the legal aspects of real federation are absent. What the simulation does 
+reproduce is the algorithmic workflow: local training, update generation, update 
+processing and aggregation. 
+6.3 Local Training and Model Updates 
+Each client starts a round from the global weights w t. It trains for a number of local 
+steps on its own partition, which gives local weights wt+1(k). The model update of client 
+k is the difference between the locally trained weights and the global weights received, 
+as in Eqn. 6.1. 
+ 𝛥𝑘 = 𝑤𝑡+1
+(𝑘) − 𝑤𝑡 (6.1) 
+An update has the same shape as the model, so it is a very large vector with one 
+entry for every trainable parameter. The size of this vector is measured by its L2 norm 
+in the next section. 
+6.4 Federated Averaging 
+Federated Averaging (McMahan et al., 2017) combines the client models into a global 
+model by taking a weighted average, with weights proportional to the number of 
+
+--- PAGE 47 ---
+35 
+ 
+training samples at each client. If client k holds nk samples and N is the total number of 
+samples across the participating clients, the aggregated model is given by Eqn. 6.2. 
+ 𝑤𝑡+1 = ∑ 𝑛𝑘
+𝑁
+𝐾
+𝑘=1  𝑤𝑡+1
+(𝑘) (6.2) 
+In Eqn. 6.2, wt+1 is the aggregated model, K is the number of clients (four in this 
+project), nk is the number of samples at client k, N is the sum of all nk, and wt+1(k) is the 
+local model of client k. A client with more data therefore influences the global model 
+more. The aggregation routine in the project computes the weights as the ratio of each 
+client size to the total number of samples and sums the weighted layer-wise parameters. 
+When the clients send processed updates and not full weights, the same weighted 
+average is applied to the processed updates and the result is added to the global model, 
+which is equivalent, as in Eqn. 6.3. 
+ 𝑤𝑡+1 = 𝑤𝑡 + ∑ 𝑛𝑘
+𝑁
+𝐾
+𝑘=1  𝛥̃𝑘 (6.3) 
+Here the tilde marks an update that has already been clipped and perturbed, as 
+defined below. The client sample counts follow from the partitioning of the training 
+data and are not tabulated in this report. 
+6.5 Privacy-Inspired Update Processing 
+Sending an update instead of an image is an improvement, but an update is not harmless. 
+A large update from a client with a rare image can reveal a lot about that image, and 
+gradient-inversion attacks have reconstructed training images from shared gradient s 
+(Zhu et al., 2019). EdgeRetina therefore processes every update in two steps before it 
+leaves the client: it limits the size of the update by clipping, and it hides fine detail in 
+what remains by adding random noise. The training page describes the resul t as 
+experimental differential privacy, states that it clips the updates and adds configurable 
+Gaussian noise, and states that it does not claim a formal privacy budget. 
+6.5.1 The L2 Norm of an Update 
+The L2 norm measures the overall magnitude of an update vector. For an update with 
+entries δ1 … δd it is defined in Eqn. 6.4. 
+ ∥ 𝛥 ∥2= √∑ 𝛿𝑗
+2𝑑
+𝑗=1  (6.4) 
+A small example makes this concrete. Consider an update with only two entries, 
+(3, 4). Its L2 norm is the square root of 3² + 4² = 25, which is 5. A longer vector has a 
+--- PAGE 48 ---
+36 
+ 
+larger norm, so the norm is a single number that tells how strongly a client wants to 
+move the model in this round. 
+6.5.2 Update Clipping 
+Clipping rescales an update whose norm exceeds a chosen threshold C so that its norm 
+becomes exactly C, and leaves smaller updates unchanged. The operation is given in 
+Eqn. 6.5. 
+ 𝛥clip = 𝛥 ⋅ min(1,
+𝐶
+∥𝛥∥2
+) (6.5) 
+In Eqn. 6.5, C is the clipping norm, which the federated training page sets to 
+1.0. Continuing the example, the update (3, 4) has a norm of 5, which is larger than C 
+= 1. The scaling factor is min(1, 1/5) = 0.2, so the clipped update is (0.6, 0.8), whose 
+norm is exactly 1. An update (0.3, 0.4) has a norm of 0.5, which is below C, so its factor 
+is 1 and it is left unchanged. The effect is that no single client, and no unusually large 
+update caused by a few unusual images, can dominate the aggregation. 
+6.5.3 Gaussian Noise Addition 
+After clipping, random noise drawn from a zero -mean Gaussian distribution is added 
+to every entry of the update, as shown in Eqn. 6.6. 
+ 𝛥̃ = 𝛥clip + 𝒩(0, 𝑠2𝐼) (6.6) 
+In Eqn. 6.6, s is the configured noise standard deviation and I is the identity 
+matrix, which means that every entry receives independent noise. The training page 
+shows a Gaussian noise setting of 0.1. Because the clipping norm is 1.0, it makes no 
+numerical difference in this configuration whether the noise level is read as a direct 
+standard deviation or as a multiplier of the clipping norm. The noise masks small, 
+individual contributions in the update while the averaging over four clients and several 
+rounds retains the shared signal. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+--- PAGE 49 ---
+37 
+ 
+6.5.4 Limitations of the Privacy Mechanism 
+Clipping and Gaussian noise do not automatically make a training procedure 
+differentially private. A formal guarantee needs a precisely defined mechanism, a noise 
+scale calibrated to the sensitivity that the clipping creates, and an accountant that tracks 
+the cumulative privacy loss across rounds to give a pair (ε, δ) (Dwork & Roth, 2014; 
+Abadi et al., 2016). EdgeRetina has no accountant and no verified analysis. It therefore 
+reports no privacy budget and makes no differential-privacy claim. Secure aggregation, 
+homomorphic encryption and encrypted model exchange are not implemented either, 
+so the server sees every processed client update in the clear. The mechanism should be 
+understood as a demonstration of the standard ingredients, which is what the 
+experimental label in the interface says. Its effect on model utility has also not been 
+separately measured. 
+6.6 Global Model Handling 
+After each round the server holds a new global model. It can distribute this model to 
+the clients for another round or save it for evaluation and prediction. The model loader 
+class contains a function for loading the global model alongside the two centrali sed 
+models, so that the global model can be used by the prediction service in the same way. 
+The evaluation of the federated global model on the held-out test set is the experiment 
+that completes the comparison with the centralised models; as discussed in C hapter 9, 
+its results have not been recorded in the materials used to write this report and are 
+therefore not stated. 
+6.7 Explainability with Grad-CAM 
+Grad-CAM explains a prediction by showing where the network looked. For a chosen 
+class c and a convolutional layer with feature maps A k, the method first computes the 
+gradient of the class score yc with respect to every feature map, and averages it over the 
+spatial positions to obtain an importance weight for each map, as in Eqn. 6.7. 
+ 𝛼𝑘
+𝑐 =
+1
+𝑍 ∑ ∑ ∂𝑦𝑐
+∂𝐴𝑖𝑗
+𝑘𝑗𝑖  (6.7) 
+In Eqn. 6.7, Z is the number of spatial positions, i and j index the positions, and 
+αkc says how much feature map k matters for class c. The heatmap is the weighted 
+combination of the maps, passed through a ReLU so that only features that increase the 
+class score remain, as in Eqn. 6.8. 
+--- PAGE 50 ---
+38 
+ 
+ 𝐿Grad-CAM
+𝑐 = ReLU(∑ 𝛼𝑘
+𝑐
+𝑘 𝐴𝑘) (6.8) 
+The resulting low-resolution map is resized to the size of the input and overlaid 
+on the image with a colour scale, so that warm colours show regions that supported the 
+predicted class. In the application the Grad-CAM service has two functions, generating 
+the heatmap and overlaying it on the original image. Examples are shown in Chapter 8. 
+Grad-CAM should be read with care. The heatmap is coarse and shows what 
+influenced the network, not what a clinician would call a lesion. It is not a segmentation, 
+it does not prove that a prediction is clinically correct, and a heatmap can look plausible 
+even when the prediction is wrong (Adebayo et al., 2018). In EdgeRetina it is a visual 
+aid for inspection and not a diagnostic output. 
+--- PAGE 51 ---
+39 
+ 
+CHAPTER 7 
+IMPLEMENTATION, SCHEDULE, TASKS AND MILESTONES 
+7.1 Development Environment 
+EdgeRetina was developed in Python using Visual Studio Code, with Git and GitHub 
+for version control. The application runs locally on a Windows machine through the 
+Flask development server, and the deep learning work uses TensorFlow and Keras. The 
+implementation follows the layered design of Chapter 4: each responsibility is placed 
+in its own class or service so that it can be tested and replaced independently. This 
+chapter walks through the modules in the order in which data flows through the system. 
+For each module, a short explanation is given and a code listing is provided for the key 
+functions. 
+ 
+7.2 Dataset Validation and Preprocessing 
+Dataset validation runs before training and checks that every image exists, can be read 
+and has a label. The preprocessing module then applies resizing, CLAHE and 
+normalisation. Listing 7.2 and Listing 7.3 give the code of these two stages. 
+7.2: Dataset and image validation 
+import json 
+from pathlib import Path 
+ 
+import pandas as pd 
+ 
+root = Path(__file__).resolve().parents[1] 
+frame = pd.read_csv(root / "data" / "raw" / "train.csv") 
+label_column = "diagnosis" 
+id_column = "id" if "id" in frame.columns else "id_code" 
+splits = {name: pd.read_csv(root / "data" / "splits" / f"{name}.csv") for name in 
+("train", "val", "test")} 
+distribution = {str(int(label)): int(count) for label, count in 
+frame[label_column].value_counts().sort_index().items()} 
+report = { 
+    "rows": len(frame), 
+    "unique_ids": int(frame[id_column].nunique()), 
+    "label_column": label_column, 
+    "id_column": id_column, 
+    "class_distribution": distribution, 
+    "imbalance_ratio_majority_to_minority": max(distribution.values()) / 
+min(distribution.values()), 
+    "split_sizes": {name: len(value) for name, value in splits.items()}, 
+--- PAGE 52 ---
+40 
+ 
+    "split_class_distribution": {name: {str(int(label)): int(count) for label, count in 
+value[label_column].value_counts().sort_index().items()} for name, value in 
+splits.items()}, 
+} 
+output = root / "reports" / "validation" / "dataset_analysis.json" 
+output.parent.mkdir(parents=True, exist_ok=True) 
+output.write_text(json.dumps(report, indent=2), encoding="utf-8") 
+print(json.dumps(report, indent=2)) 
+ 
+ 
+ 
+7.3 Dataset Splitting and Client Partitioning 
+The dataset splitter divides the validated data into training, validation and test subsets 
+and then divides the training data among the four simulated clients. The split is fixed 
+so that the same test set is used to compare all models. Listing 7.4 shows the code. 
+Code Listing 7.4: Train / validation / test split and four-client partitioning 
+from pathlib import Path 
+ 
+import numpy as np 
+import pandas as pd 
+ 
+def dirichlet_partition(frame: pd.DataFrame, clients: list[str], alpha: float = 2.0, 
+seed: int = 42) -> dict[str, pd.DataFrame]: 
+    rng = np.random.default_rng(seed) 
+    assignments = {client: [] for client in clients} 
+    for label in sorted(frame["diagnosis"].unique()): 
+        indices = frame.index[frame["diagnosis"] == label].to_numpy() 
+        rng.shuffle(indices) 
+        proportions = rng.dirichlet(np.full(len(clients), alpha)) 
+        boundaries = (np.cumsum(proportions) * len(indices)).astype(int)[:-1] 
+        for client, values in zip(clients, np.split(indices, boundaries)): 
+            assignments[client].extend(values.tolist()) 
+    return {client: frame.loc[sorted(indices)].reset_index(drop=True) for client, 
+indices in assignments.items()} 
+ 
+def save_distribution(partitions: dict[str, pd.DataFrame], output_path: Path) -> 
+None: 
+    rows = [] 
+    for client, frame in partitions.items(): 
+        counts = frame["diagnosis"].value_counts().to_dict() 
+        rows.append({"client": client, **{f"class_{label}": int(counts.get(label, 0)) for 
+label in range(5)}, "total": len(frame)}) 
+    output_path.parent.mkdir(parents=True, exist_ok=True) 
+    pd.DataFrame(rows).to_csv(output_path, index=False) 
+ 
+ 
+--- PAGE 53 ---
+41 
+ 
+ 
+7.4 Model Construction and Training 
+Each model is built from a pretrained backbone and a new five-class head. The training 
+service trains the head first and then fine -tunes the backbone, evaluates the model on 
+the test set and saves the checkpoint and the metrics. Listing 7.5 and Listing 7.6  show 
+the model-building code, and Listing 7.7 shows the training and evaluation routine. 
+Code Listing 7.5: MobileNetV3Small model construction 
+import tensorflow as tf 
+ 
+from ..config import CLASS_NAMES, IMAGE_SIZE 
+ 
+def build_model(weights: str | None = "imagenet", architecture: str = 
+"MobileNetV3Small") -> tf.keras.Model: 
+    if architecture == "EfficientNetB0": 
+        backbone = tf.keras.applications.EfficientNetB0( 
+            input_shape=(*IMAGE_SIZE, 3), include_top=False, weights=weights 
+        ) 
+    elif architecture == "MobileNetV3Small": 
+        backbone = tf.keras.applications.MobileNetV3Small( 
+            input_shape=(*IMAGE_SIZE, 3), include_top=False, weights=weights, 
+include_preprocessing=False 
+        ) 
+    else: 
+        raise ValueError(f"Unsupported architecture: {architecture}") 
+    backbone.trainable = False 
+    inputs = tf.keras.Input(shape=(*IMAGE_SIZE, 3), name="fundus_input") 
+    backbone_input = (inputs + 1.0) * 127.5 if architecture == "EfficientNetB0" else 
+inputs 
+    features = backbone(backbone_input, training=False) 
+    features = tf.keras.layers.GlobalAveragePooling2D()(features) 
+    features = tf.keras.layers.Dropout(0.25)(features) 
+    outputs = tf.keras.layers.Dense(len(CLASS_NAMES), activation="softmax", 
+name="severity_output")(features) 
+    return tf.keras.Model(inputs, outputs, name=f"EdgeRetina{architecture}") 
+ 
+ 
+ 
+--- PAGE 54 ---
+42 
+ 
+Code Listing 7.6: EfficientNetB0 model construction 
+import json 
+from pathlib import Path 
+ 
+from ..config import CLASS_NAMES, Config, IMAGE_SIZE, 
+PREPROCESSING_VERSION 
+ 
+class ModelValidationError(RuntimeError): 
+    pass 
+ 
+def load_verified_model(model_path: Path | None = None, metadata_path: Path | 
+None = None): 
+    model_path = model_path or Config.MODEL_PATH 
+    metadata_path = metadata_path or Config.MODEL_METADATA_PATH 
+    if not model_path.exists(): 
+        raise ModelValidationError(f"Trained model not found: {model_path}") 
+    if not metadata_path.exists(): 
+        raise ModelValidationError(f"Model metadata not found: {metadata_path}") 
+    with metadata_path.open(encoding="utf-8") as handle: 
+        metadata = json.load(handle) 
+    expected = {str(key): value for key, value in CLASS_NAMES.items()} 
+    if metadata.get("class_names") != expected: 
+        raise ModelValidationError("Model class mapping does not match the 
+canonical EdgeRetina mapping") 
+    if metadata.get("num_classes") != len(CLASS_NAMES) or 
+metadata.get("image_size") != list(IMAGE_SIZE): 
+        raise ModelValidationError("Model metadata has an incompatible output or 
+image size") 
+    if metadata.get("preprocessing_version") != PREPROCESSING_VERSION or 
+not metadata.get("trained"): 
+        raise ModelValidationError("Model metadata does not describe a trained 
+compatible model") 
+    import tensorflow as tf 
+ 
+    model = tf.keras.models.load_model(model_path, compile=False) 
+    if model.output_shape[-1] != len(CLASS_NAMES): 
+        raise ModelValidationError("Model output does not contain five class 
+probabilities") 
+    return model, metadata 
+ 
+ 
+ 
+ 
+7.5 Federated Learning Modules 
+The federated modules implement the workflow of Chapter 6. The client trains locally 
+and produces an update, the privacy processor clips the update and adds Gaussian noise, 
+and the server together with the aggregator performs FedAvg. 
+--- PAGE 55 ---
+43 
+ 
+Code Listing 7.5: FederatedClient:  
+import numpy as np 
+ 
+def fedavg(weight_sets: list[list[np.ndarray]], sample_counts: list[int]) -> 
+list[np.ndarray]: 
+    if not weight_sets or len(weight_sets) != len(sample_counts) or 
+sum(sample_counts) <= 0: 
+        raise ValueError("FedAvg requires non-empty client weights and positive 
+sample counts") 
+    total = float(sum(sample_counts)) 
+    return [sum(weights[index] * (count / total) for weights, count in zip(weight_sets, 
+sample_counts)) for index in range(len(weight_sets[0]))] 
+ 
+ 
+ 
+ 
+7.6 Prediction and Grad-CAM 
+The prediction service accepts a validated image, preprocesses it, runs the selected 
+model and returns the class, the confidence and the probabilities. The Grad -CAM 
+service computes the heatmap for the predicted class and overlays it on the image. The 
+corresponding code is given in Listing 7.11 and Listing 7.12. 
+Code Listing 7.11: PredictionService: preprocessing, prediction. 
+"""Run a real prediction against one image from each available label.""" 
+import sys 
+from pathlib import Path 
+ 
+import pandas as pd 
+ 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "backend")) 
+ 
+from app.config import CLASS_NAMES, Config 
+from app.services.prediction_service import predict_image 
+ 
+if __name__ == "__main__": 
+    frame = pd.read_csv(Config.CSV_PATH) 
+    image_column = "id" if "id" in frame.columns else "id_code" 
+    for label in CLASS_NAMES: 
+        record = frame[frame.diagnosis == label].iloc[0] 
+        matches = list(Config.IMAGE_DIR.glob(f"{record[image_column]}.*")) 
+        result = predict_image(matches[0]) 
+        print(f"Expected: {CLASS_NAMES[label]} | Predicted: {result['class_name']} 
+| Probabilities: {result['probabilities']}") 
+ 
+ 
+ 
+ 
+--- PAGE 56 ---
+44 
+ 
+7.8 Project Schedule, Tasks and Milestones 
+The project was carried out in the semester period from 06.07.2026 to 03.11.2026, with 
+two formal reviews. Table 7.2 lists the sixteen phases of the work in the order in which 
+they were carried out, and Table 7.3 lists the milestones. 
+Table 7.2 Project Phases and Tasks 
+Phase Activity Status 
+1 Problem identification and requirement analysis Completed 
+2 Literature survey Completed 
+3 APTOS dataset collection and validation Completed 
+4 Image preprocessing Completed 
+5 Dataset partitioning Completed 
+6 MobileNetV3Small implementation Completed 
+7 EfficientNetB0 implementation Completed 
+8 Federated client implementation Completed 
+9 Federated server and FedAvg implementation Completed 
+10 Privacy-inspired update processing Completed 
+11 Model evaluation Completed 
+(centralised models) 
+12 Grad-CAM implementation Completed 
+13 Flask web application Completed 
+14 SQLite prediction history Completed 
+15 Integration and testing Completed 
+(functional test cases) 
+ 
+--- PAGE 57 ---
+45 
+ 
+CHAPTER 8 
+PROJECT DEMONSTRATION 
+This chapter demonstrates the working application through screenshots taken from the 
+running system. Each screenshot is accompanied by a description of what it shows and 
+which requirement it demonstrates. 
+8.1 Dashboard and Home Page 
+Fig. 8.1 shows the home page. The tagline "Understand the image. Protect the data." 
+summarises the purpose of the project. The page states that EdgeRetina is a local 
+research workspace for five-class diabetic retinopathy experiments with explicit model 
+validation and no silent fallbacks. Below the banner, status tiles report that the dataset 
+is ready, that two verified models are available and that the privacy mode is 
+experimental DP. The navigation bar gives access to the dashboard, training, history 
+and reports. 
+ 
+Fig. 8.1 Home Page of the EdgeRetina Web Application 
+8.2 Training Control Room 
+The training page, titled the training control room, organises the work as an evidence 
+chain. The first step is to validate the APTOS files, shown in Fig. 8.2. The multi-model 
+training step runs both architectures. While it runs the page shows a progress bar and a 
+live log; when it completes, the page reports that the verified multi-model run is ready 
+and lists the measured test accuracy and macro-F1 of each model, as shown in Fig. 8.3. 
+The interface notes that the live batch accuracy is temporary and that the final accuracy 
+
+--- PAGE 58 ---
+46 
+ 
+appears only after validation and test evaluation. 
+ 
+Fig. 8.2 Training Control Room with the Dataset Validation Step 
+ 
+Fig. 8.3 Multi-Model Training Completed with Verified Test Metrics 
+The metrics reported in Fig. 8.3 are 71.1% test accuracy and 40.9% macro -F1 
+for EfficientNetB0 and 63.3% test accuracy and 42.0% macro -F1 for 
+MobileNetV3Small. The per -stage training accuracy recorded by the application is 
+given in Fig. 8.4 and reproduced in Table 5.5. 
+
+--- PAGE 59 ---
+47 
+ 
+ 
+Fig. 8.4 Training and Validation Accuracy Recorded by Stage 
+8.3 Federated Learning with Privacy-Inspired Processing 
+The federated training section of the page is titled "Four simulated hospitals, one 
+protected global model". It explains that FedAvg aggregates local updates from 
+Hospitals A, B, C and D, that the privacy step clips updates to 1.0 and adds configurable 
+Gaussian noise, and that this is experimental and does not claim a formal privacy 
+budget. The user sets the number of aggregation rounds, which is five by default, and 
+starts the run. During the run the page shows a progress bar and a status message such 
+as "Starting FedAvg with differential privacy" together with the noise setting of 0.1. 
+Fig. 8.5 shows this page. 
+ 
+Fig. 8.5 Federated Learning and Privacy-Inspired Processing Page 
+8.4 Prediction Workspace 
+The prediction workspace in Fig. 8.6 lets the user choose a retinal image. The panel 
+
+--- PAGE 60 ---
+48 
+ 
+states that JPEG or PNG files are accepted and that quality checks are applied. Two 
+actions are offered: running a verified prediction with the best verified model, and an 
+optional request for a second opinion generated by a general-purpose language model. 
+ 
+Fig. 8.6 Prediction Workspace with an Uploaded Retinal Image 
+Fig. 8.7 shows the output of a verified prediction. The predicted grade is 
+displayed together with the confidence, the name of the best verified model, the 
+measured test accuracy of every available model, and the probability of each class. In 
+the example of Fig. 8.7, the model returns Severe DR with a confidence of 33.2% and 
+the interface marks it as an uncertain prediction, because the probabilities are spread 
+over several classes. A second example in Fig. 8.8 shows a Moderate DR prediction 
+with a confidence of 57.1%, where the probability mass is concentrated on one class. 
+
+--- PAGE 61 ---
+49 
+ 
+ 
+Fig. 8.7 Prediction Output with a Low-Confidence (Uncertain) Prediction 
+ 
+Fig. 8.8 Prediction Output with Class Probabilities (Moderate DR, 57.1%) 
+The interface also contains an optional second -opinion feature, shown in Fig. 
+8.9, that returns a short narrative description of visible findings and a referral suggestion 
+from an external language model, and that states that it is a research second -opinion 
+tool and not a clinical diagnosis. This feature is separate from the verified classification 
+pipeline, it was not part of the quantitative evaluation in this report, and its output must 
+not be treated as a measured result. 
+
+--- PAGE 62 ---
+50 
+ 
+ 
+Fig. 8.9 Optional Second-Opinion Panel Labelled as Not a Clinical Diagnosis 
+8.5 Grad-CAM Explanation 
+After a prediction, the Grad -CAM section displays the retinal image with a heatmap 
+overlay. Fig. 8.10 and Fig. 8.11 show two examples. The warm regions are the areas 
+that contributed most to the predicted class. In Fig. 8.10, the highlighted region lies near 
+the optic disc, where bright exudate -like structures are visible in the image. As 
+explained in Chapter 6, such maps are an aid to inspection and they are not lesion 
+segmentations. 
+ 
+Fig. 8.10 Grad-CAM Heatmap Overlay on a Retinal Fundus Image 
+
+--- PAGE 63 ---
+51 
+ 
+ 
+Fig. 8.11 A Second Grad-CAM Example 
+8.6 Prediction History 
+The history page in Fig. 8.12 lists earlier predictions with their identifier, image name, 
+predicted class, confidence, model and timestamp. A search box and a class filter allow 
+the user to find records. The list demonstrates requirement FR10 and shows th at 
+predictions made with different models and on different days are preserved. 
+ 
+Fig. 8.12 Prediction History Page 
+8.7 Evidence Dashboard 
+The evidence dashboard collects the verified results in one place, so that the figures in 
+the report can be traced to artifacts generated by the application. It reports a dataset size 
+of 3,662 images, the best test accuracy of 71.1% and a class-imbalance ratio of 9.35 to 
+1, and it explains how to read the values: accuracy shows the overall proportion of 
+correct classifications, macro-F1 gives every disease grade equal importance, and the 
+
+--- PAGE 64 ---
+52 
+ 
+confusion matrices show which grades are confused with each other. The charts of 
+Chapter 9 are taken from this dashboard. 
+ 
+Fig. 8.13 Evidence Dashboard of the Application 
+8.8 Typical Usage Session 
+A typical session starts on the home page, where the status tiles confirm that the dataset 
+is ready and that two verified models are available. A researcher who wants to 
+reproduce the results opens the training page, validates the APTOS files and starts th e 
+multi-model training; when it is finished, the verified accuracy and macro -F1 of both 
+architectures are displayed and the evidence dashboard is updated. The researcher can 
+then open the federated section, choose the number of rounds and run the simulated  
+federated training with the privacy-inspired processing. 
+A user who only wants a prediction opens the prediction workspace, selects a 
+fundus image and runs the verified prediction. The result shows the predicted grade, 
+the confidence and the class probabilities. If the confidence is low, the interface says 
+so. The user can open the Grad -CAM explanation to see which region influenced the 
+prediction, and later the history page lists the prediction with the model name and the 
+time. This sequence exercises all the main requirements of the system and is the 
+sequence that was used to produce the screenshots in this chapter. 
+
+--- PAGE 65 ---
+53 
+ 
+CHAPTER 9 
+TESTING, RESULTS AND DISCUSSION 
+9.1 Testing Strategy 
+The testing of EdgeRetina covers the software components, the integration of the 
+components, the functions of the interface and the quality of the models. Table 9.1 
+summarises the strategies that were used. 
+Table 9.1 Testing Strategies 
+Strategy Scope 
+Unit testing Individual components: preprocessing, model loading, 
+update clipping, prediction and database operations 
+Integration testing Interaction between Flask routes, preprocessing, model, 
+prediction and database components 
+Functional testing Major system functions exercised through the web 
+interface 
+Model testing Evaluation of trained models on the held-out test images 
+with classification metrics 
+Federated learning 
+testing 
+Client initialisation, local training, update generation, 
+clipping, noise addition, aggregation and global model 
+generation 
+Explainability testing Generation of a Grad-CAM heatmap for supported model 
+predictions 
+ 
+9.2 Functional Test Cases 
+The functional test cases that were defined for the application and their recorded status 
+are given in Table 9.2. All twelve cases were recorded as passed in the project review. 
+Table 9.2 Functional Test Cases 
+ID Input Expected output Status 
+TC01 Valid retinal image Image accepted Pass 
+TC02 Invalid image file Validation error Pass 
+TC03 Valid retinal image DR prediction generated Pass 
+TC04 Prediction request Confidence displayed Pass 
+TC05 Prediction request Class probabilities displayed Pass 
+TC06 Prediction request Grad-CAM generated Pass 
+TC07 Local client data Local training completed Pass 
+TC08 Client model update Update clipping applied Pass 
+TC09 Clipped update Gaussian noise applied Pass 
+--- PAGE 66 ---
+54 
+ 
+TC10 Multiple client updates FedAvg global model generated Pass 
+TC11 Prediction completed Result stored in SQLite Pass 
+TC12 History request Previous predictions displayed Pass 
+ 
+ 
+9.3 Evaluation Metrics 
+Model performance is measured on the 550 test images with several metrics. Each is 
+explained below in words and in an equation. In the equations TP, FP and FN denote 
+the true positives, false positives and false negatives of a class, computed from the 
+confusion matrix, in which each row is an actual class and each column a predicted 
+class. 
+Accuracy is the proportion of test images that are classified correctly, as in Eqn. 
+9.1, where N is the number of test images. 
+ Accuracy=
+∑ 𝑇𝑐 𝑃𝑐
+𝑁  (9.1) 
+Precision of a class is the proportion of images predicted as that class that really 
+belong to it, and recall is the proportion of the images of that class that are found, as in 
+Eqn. 9.2 and Eqn. 9.3. 
+ Precision𝑐 =
+𝑇𝑃𝑐
+𝑇𝑃𝑐+𝐹𝑃𝑐
+ (9.2) 
+ Recall𝑐 =
+𝑇𝑃𝑐
+𝑇𝑃𝑐+𝐹𝑁𝑐
+ (9.3) 
+The F1-score of a class is the harmonic mean of its precision and recall, and the 
+macro-F1 is the plain average of the five class F1 values, so that each class has equal 
+weight whatever its size, as in Eqn. 9.4 and Eqn. 9.5. 
+ 𝐹1𝑐 =
+2 Precision𝑐 Recall𝑐
+Precision𝑐+Recall𝑐
+ (9.4) 
+ Macro-F1 =
+1
+5 ∑ 𝐹4
+𝑐=0 1𝑐 (9.5) 
+Because the grades are ordered, two further indicators from the evaluation 
+dashboard are used. The mean absolute error (MAE) in Eqn. 9.6 measures the average 
+distance between the predicted and the actual grade, so confusing Mild with Moderate 
+costs 1 but c onfusing No DR with Proliferative DR costs 4. The quadratic weighted 
+kappa (QWK) in Eqn. 9.7 (Cohen, 1968) measures agreement beyond chance with a 
+penalty that grows with the square of the grade difference. In Eqn. 9.7, O is the observed 
+confusion matrix, E the matrix expected by chance and wij = (i − j)² the weights. 
+--- PAGE 67 ---
+55 
+ 
+ MAE =
+1
+𝑁 ∑ |𝑁
+𝑛=1 𝑦𝑛 − 𝑦̂𝑛| (9.6) 
+ 𝜅𝑤 = 1 −
+∑ 𝑤𝑖𝑗𝑖,𝑗 𝑂𝑖𝑗
+∑ 𝑤𝑖𝑗𝑖,𝑗 𝐸𝑖𝑗
+ (9.7) 
+9.4 Centralized Model Results 
+The two architectures were evaluated on the same held-out test set. The results recorded 
+by the application are in Table 9.3, and the comparison chart produced by the evidence 
+dashboard is in Fig. 9.1. 
+Table 9.3 Centralized Test Results of the Two Models 
+Model Test accuracy Macro-F1 
+MobileNetV3Small 63.3% 42.0% 
+EfficientNetB0 71.1% 40.9% 
+ 
+ 
+Fig. 9.1 Test-Set Performance: Accuracy, Macro-F1 and Quadratic Weighted Kappa 
+EfficientNetB0 has the higher test accuracy, 71.1% against 63.3%, a difference 
+of 7.8 percentage points. MobileNetV3Small has a slightly higher macro -F1, 42.0% 
+against 40.9%. The two metrics disagree about which model is better, and this is 
+informative: th e accuracy of EfficientNetB0 is gained mostly on the large classes, 
+whereas the macro-F1 values of both models are low because the minority classes are 
+recognised poorly. The chart also contains a bar labelled Centralized baseline, which 
+
+--- PAGE 68 ---
+56 
+ 
+has lower values on all three indicators; it is discussed in Section 9.6. The kappa values 
+read from the chart are roughly 0.74 for EfficientNetB0 and 0.76 for 
+MobileNetV3Small, and both are far higher than the baseline, which means that many 
+of the errors are between neighbouring grades. 
+These are the results of the centralised evaluation. They are not the results of 
+the federated global model. 
+9.5 Confusion Matrix Analysis 
+The confusion matrix of EfficientNetB0 in Fig. 9.2 accounts for all 550 test images. Its 
+diagonal contains 391 correct predictions (264 + 2 + 105 + 1 + 19), which gives 391 / 
+550 = 71.1%, exactly the reported test accuracy. The per-class precision, recall and F1 
+values derived from this matrix are in Table 9.4, and their unweighted mean F1 is 
+40.9%, which also matches the reported macro -F1. This consistency check confirms 
+that the matrix and the aggregate metrics come from the same predictions. 
+ 
+Fig. 9.2 Confusion Matrix of EfficientNetB0 (Rows: Actual, Columns: Predicted) 
+Table 9.4 Per-Class Metrics of EfficientNetB0 Derived from the Confusion Matrix 
+Class Support Precision (%) Recall (%) F1 (%) 
+No DR 271 86.8 97.4 91.8 
+Mild DR 56 66.7 3.6 6.8 
+Moderate DR 150 58.7 70.0 63.8 
+
+--- PAGE 69 ---
+57 
+ 
+Severe DR 29 100.0 3.4 6.7 
+Proliferative DR 44 30.2 43.2 35.5 
+Macro average 550   40.9 
+ 
+The table shows the character of the model. It is excellent at recognising the 
+healthy class (recall 97.4%) and reasonable on Moderate DR (recall 70.0%). It almost 
+never predicts Mild DR or Severe DR correctly: only 2 of 56 Mild images and 1 of 29 
+Severe i mages are recognised, and the Severe and Mild rows are dominated by 
+predictions of the neighbouring Moderate or the more advanced Proliferative class. 
+Proliferative DR is recognised in 19 of 44 cases (43.2%), with many Moderate images 
+mistaken for it, which explains its low precision of 30.2%. The very high precision for 
+Severe DR (100%) is based on a single predicted image and says little. The errors are 
+mostly between neighbouring or nearby grades, which is consistent with the favourable 
+kappa value, but the low recall for the Mild and Severe grades is a real weakness for a 
+screening tool. 
+ 
+Fig. 9.3 Per-Class F1-Score Derived from the Confusion Matrices 
+9.6 The Centralized Baseline and Consistency of the Evidence 
+The evidence dashboard also contains a confusion matrix labelled centralized baseline, 
+shown in Fig. 9.4. Its entries also sum to 550 test images, and its diagonal (199 + 19 + 
+44 + 0 + 19 = 281) gives an accuracy of 51.1%. The macro -F1 computed from it is 
+33.8%, the quadratic weighted kappa about 0.49 and the MAE about 0.94, which agree 
+with the baseline bars of Fig. 9.1 and Fig. 9.5. The training log lists a run called 
+Centralized MobileNetV3Small, so this matrix appears to belong to an earlier 
+centralised MobileNetV3Small baseline run. It is not the matrix of the 
+
+--- PAGE 70 ---
+58 
+ 
+MobileNetV3Small model with 63.3% accuracy reported in Table 9.3, which comes 
+from the later multi -model training run. The baseline is retained in the report as a 
+reference point showing how much the later training improved the results; its exact 
+configuration should be confirmed from the experiment records. 
+ 
+Fig. 9.4 Confusion Matrix of the Centralized Baseline Run 
+ 
+Fig. 9.5 Ordinal Error (Mean Absolute Error) of the Evaluated Models 
+
+--- PAGE 71 ---
+59 
+ 
+The ordinal error chart in Fig. 9.5 shows that EfficientNetB0 and 
+MobileNetV3Small both reduce the average grade error to about 0.5, compared with 
+about 0.94 for the baseline. For EfficientNetB0, the value computed from its confusion 
+matrix is 0.47. A conf usion matrix for the 63.3% MobileNetV3Small model was not 
+among the materials supplied for this report. Table 9.5 lists the consistency checks that 
+were carried out between the figures, and the item that should be regenerated. 
+Table 9.5 Consistency Checks Between Reported Metrics and Figures 
+Check Result 
+EfficientNetB0 matrix total equals test-set size 
+(550) 
+Consistent 
+EfficientNetB0 matrix accuracy = 71.1% Consistent (391 / 550) 
+EfficientNetB0 macro-F1 from matrix = 40.9% Consistent 
+EfficientNetB0 MAE from matrix (0.47) agrees 
+with the chart 
+Consistent 
+Centralized baseline matrix accuracy (51.1%) 
+agrees with the chart 
+Consistent 
+MobileNetV3Small (63.3%, 42.0%) confusion 
+matrix available 
+Not available; should be 
+regenerated from the same 
+test labels and predictions 
+Federated global-model test metrics available Not available in the supplied 
+materials 
+ 
+9.7 Federated Model Evaluation Status 
+The federated workflow was exercised in the application with four simulated clients, 
+clipping, Gaussian noise and FedAvg aggregation, and test cases TC07 to TC10 
+confirm that each step works. A test -set evaluation of the resulting global model, 
+however, is not among the results recorded for this report. The report therefore does not 
+state any accuracy, macro-F1, training time or privacy budget for the federated model. 
+This evaluation, run on the same 550 -image test set and reported next to Table 9.3, is 
+the most important missing experiment and is listed among the future work in Chapter 
+10. 
+9.8 Discussion 
+Four conclusions follow from the results. First, EfficientNetB0 is the better model by 
+accuracy and is the model that the application names as the best verified model, which 
+is consistent with its higher capacity. Second, overall accuracy hides the real behaviour: 
+--- PAGE 72 ---
+60 
+ 
+both macro-F1 values are around 41–42%, far below the accuracies, because the Mild 
+and Severe grades are almost never recognised correctly. Third, the imbalance of the 
+dataset, with 1,805 No DR images against 193 Severe ones, is the most likely cause, 
+because a model that predicts the majority class often is rewarded by accuracy. The 
+weighted and focal -loss experiments mentioned in the dashboard are the natural 
+remedies. Fourth, the errors are mostly between neighbouring grades, as the kappa and 
+MAE values show, so the model captures the ordinal structure of the disease even when 
+it does not name the exact grade. The system is thus useful as a research prototype and 
+as a demonstration of the workflow, but its performance on the minority grades is not 
+sufficient for any clinical purpose. 
+9.9 Error Pattern Analysis 
+The confusion matrix of EfficientNetB0 allows the main error patterns to be identified. 
+Of the 56 Mild images, 36 (64%) are predicted as Moderate, so Mild DR is mostly 
+absorbed by the neighbouring class. Of the 29 Severe images, 15 (52%) are predicted 
+as Proliferative and 12 (41%) as Moderate, so the Severe class is split between its two 
+neighbours. Of the 44 Proliferative images, 23 (52%) are predicted as Moderate. 
+Among the 150 Moderate images, 105 are correct, while 24 are predicted as No DR 
+and 20 as Pr oliferative. In almost all cases the predicted grade is adjacent to or two 
+grades away from the true grade, and only a handful of images are confused across the 
+whole range, such as a few No DR images that are called Proliferative. This pattern is 
+the reason for the comparatively high kappa value and the low MAE. 
+For comparison, the per -class values of the centralized baseline run, derived 
+from its confusion matrix in the same way, are given in Table 9.6. The baseline 
+recognises Mild DR better than the later model (recall 33.9% against 3.6%), but it is far 
+weaker on No DR (recall 73.4% against 97.4%) and on Moderate DR (29.3% against 
+70.0%), and it never predicts Severe DR correctly. The improvement in overall 
+accuracy of the later models therefore comes mainly from the two large classes, and in 
+the case of EfficientNetB0 it is paid for with a lower recall on the Mild class. This is a 
+typical effect of class imbalance: as the model becomes more confident on the frequent 
+classes, the rare classes are predicted less often. 
+ 
+ 
+--- PAGE 73 ---
+61 
+ 
+Table 9.6 Per-Class Metrics of the Centralized Baseline Derived from Its Confusion 
+Matrix 
+Class Support Precision (%) Recall (%) F1 (%) 
+No DR 271 87.3 73.4 79.8 
+Mild DR 56 30.6 33.9 32.2 
+Moderate DR 150 37.3 29.3 32.8 
+Severe DR 29 0.0 0.0 0.0 
+Proliferative DR 44 16.8 43.2 24.2 
+Macro average 550   33.8 
+ 
+9.10 Threats to Validity 
+Several factors limit how far the results can be generalised. The test set contains only 
+550 images and the minority classes are small (29 Severe and 44 Proliferative images), 
+so the per-class values, particularly the recall of the Severe class, are based on very few 
+images and carry considerable statistical uncertainty. A single train, validation and test 
+split was used, so the variability across different splits and random seeds has not been 
+measured. The images come from one public dataset and one challenge, so the reported 
+performance may not transfer to other cameras or populations. The labels were assigned 
+by human graders and contain some noise, which affects the ceiling of achievable 
+accuracy, in particular between neighbouring grades. Finally, the f ederated results are 
+missing, so no statement about the cost of federation or of the privacy -inspired 
+processing in terms of accuracy can be made. These threats do not invalidate the 
+workflow demonstrated by the project, but they have to be kept in mind wh en 
+interpreting the numbers. 
+9.11 Summary of Findings 
+Table 9.7 Summary of Main Findings 
+Aspect Finding 
+Best accuracy EfficientNetB0, 71.1% on the 550-image test set 
+Best macro-F1 MobileNetV3Small, 42.0% (EfficientNetB0: 40.9%); the 
+difference is small 
+Strongest classes No DR (recall 97.4%) and Moderate DR (recall 70.0%) 
+for EfficientNetB0 
+Weakest classes Mild DR and Severe DR (recall 3.6% and 3.4%) for 
+EfficientNetB0 
+Error structure Errors mostly between neighbouring grades; MAE 0.47 
+and QWK about 0.74 for EfficientNetB0 
+--- PAGE 74 ---
+62 
+ 
+Improvement over the 
+baseline 
+Baseline run: 51.1% accuracy and 33.8% macro-F1; later 
+models are clearly better 
+Federated model Workflow verified (TC07–TC10); test metrics not 
+recorded 
+Functional tests 12 of 12 recorded as passed 
+ 
+--- PAGE 75 ---
+63 
+ 
+CHAPTER 10 
+LIMITATIONS AND FUTURE WORK 
+10.1 Limitations 
+The limitations of the project are stated plainly so that the results are interpreted 
+correctly. 
+Table 10.1 Limitations of the Current Implementation 
+Area Limitation 
+Dataset A single public dataset of 3,662 images is used. Its size and its 
+acquisition conditions limit generalisation to other cameras, 
+populations and clinics. 
+Class imbalance Mild and Severe DR together make up about 15% of the data. 
+Recall for these classes is very low (3.6% and 3.4% for 
+EfficientNetB0). 
+Generalisation The models were evaluated on a test split of the same dataset 
+and not on an external dataset. 
+Centralised versus 
+federated results 
+The reported accuracy and macro-F1 values are centralised. 
+No federated global-model test results are recorded. 
+Simulated clients The four clients are partitions of one dataset, not real 
+institutions; real federation would bring non-identical data, 
+network and legal issues. 
+Privacy Clipping and Gaussian noise are privacy-inspired. There is no 
+privacy accountant, no (ε, δ) guarantee, no secure aggregation 
+and no encryption of updates. 
+Explainability Grad-CAM heatmaps are coarse and are not lesion 
+segmentations; they were not validated against clinician 
+annotations. 
+Reproducibility Several training details (input size, optimiser, learning rates, 
+batch size, epochs, seeds) must be documented in a 
+configuration file for exact reproduction. 
+Clinical validity The system has not been clinically validated and is not a 
+medical device. 
+ 
+10.2 Future Work 
+The following improvements are proposed. None of them has been implemented in the 
+current version. 
+• Evaluate the federated global model on the held -out test set and report its 
+accuracy, macro-F1 and per -class metrics next to the centralised results, with 
+the effect of the clipping norm and the noise level (a privacy-utility study). 
+--- PAGE 76 ---
+64 
+ 
+• Regenerate and publish the confusion matrix and per -class metrics of 
+MobileNetV3Small from the same test labels and predictions as the other 
+models. 
+• Address the class imbalance with class -weighted or focal losses, balanced 
+sampling and targeted augmentation of the Mild and Severe classes, and report 
+their effect on macro-F1 and recall. 
+• Add a privacy accountant (for example a moments accountant) so that a formal 
+(ε, δ) guarantee can be computed, and consider secure aggregation. 
+• Use non-identical client partitions and, if possible, several datasets to simulate 
+realistic heterogeneity between hospitals, and compare FedAvg with methods 
+such as FedProx (Li et al., 2020). 
+• Validate Grad -CAM against annotated lesions, and compare it with other 
+explanation methods. 
+• Evaluate on an external dataset and, in the longer term, run a real multi -
+institutional federated study with ethical approval and clinical validation. 
+• Package the experiment configuration, random seeds and software versions so 
+that every table of results can be reproduced with a single command. 
+ 
+10.3 Ethical and Regulatory Considerations 
+Any system that handles medical images must respect the privacy of patients and the 
+rules that govern medical software. The APTOS 2019 images are distributed for 
+research under the terms of the public challenge, and EdgeRetina uses them for 
+academic purposes only. The prototype stores uploaded images and predictions locally, 
+and anyone who wanted to use it with real patient images would need informed consent, 
+an ethics approval, secure storage and a data -protection assessment. Diagnostic 
+software that influ ences clinical decisions is regulated as a medical device in most 
+countries and needs clinical validation, which EdgeRetina has not undergone. The 
+interface and this report therefore state clearly that the output is a research result and 
+not a diagnosis. 
+Fairness is a second concern. A model trained on one dataset can perform 
+differently for patients with different ethnicity, age, camera type or image quality, and 
+the low recall on rare grades means that the model could systematically under-report . 
+--- PAGE 77 ---
+65 
+ 
+CHAPTER 11 
+SUMMARY 
+EdgeRetina is a research prototype for privacy-aware diabetic retinopathy classification 
+that combines deep learning, simulated federated learning, privacy -inspired update 
+processing and explainable artificial intelligence in a single software system. It uses the 
+APTOS 2019 Blindness Detection dataset of 3,662 retinal fundus images and classifies 
+them into five severity categories: No DR, Mild, Moderate, Severe and Proliferative 
+DR. 
+Two architectures, MobileNetV3Small and EfficientNetB0, were implemented 
+through transfer learning and evaluated on a common test set of 550 images. 
+EfficientNetB0 reached a test accuracy of 71.1% with a macro -F1 of 40.9%, and 
+MobileNetV3Small reached 63.3% with a macro -F1 of 42.0%. The confusion -matrix 
+analysis of EfficientNetB0 showed that the model is strong on No DR and Moderate 
+DR but recognises the Mild and Severe grades poorly, an effect of the strong class 
+imbalance. The results are centralised results. 
+A federated learning environment with four simulated hospital clients was 
+implemented. The clients train locally, their updates are clipped to a norm of 1.0 and 
+perturbed with Gaussian noise, and the server aggregates them with Federated 
+Averaging over a c onfigurable number of rounds. This is a privacy -inspired 
+mechanism. No privacy accountant is implemented, so no formal differential -privacy 
+guarantee is claimed, and no secure aggregation or encryption is used. Test results for 
+the federated global model were not recorded and are not reported. 
+Grad-CAM was integrated to provide heatmap explanations, and a Flask web 
+application allows users to upload an image, obtain the predicted class, the confidence 
+and the class probabilities, view a Grad -CAM overlay, run training and consult a 
+prediction his tory stored in SQLite. Twelve functional test cases were recorded as 
+passed.The recommendations that follow from the work are to evaluate the federated 
+model on the same test set, to tackle the class imbalance with weighted or focal losses 
+and balanced sampling, to add privacy accounting, to validate the explanations against 
+clinical annotations, and to test on external and heterogeneous data. With these 
+extensions EdgeRetina can grow from a demonstration of the workflow into a basis for 
+a more rigorous study of privacy-preserving and explainable retinal screening. 
+--- PAGE 78 ---
+66 
+ 
+REFERENCES 
+[1] Gulshan, V., Peng, L., Coram, M., Stumpe, M. C., Wu, D., Narayanaswamy, A., 
+Venugopalan, S., Widner, K., Madams, T., Cuadros, J., Kim, R., Raman, R., Nelson, 
+P. C., Mega, J. L., & Webster, D. R. (2016). Development and validation of a deep 
+learning algorithm for detection of diabetic retinopathy in retinal fundus photographs. 
+JAMA, 316(22), 2402–2410. https://doi.org/10.1001/jama.2016.17216 
+ 
+[2] Ting, D. S. W., Cheung, C. Y.-L., Lim, G., Tan, G. S. W., Quang, N. D., Gan, A., 
+… Wong, T. Y. (2017). Development and validation of a deep learning system for 
+diabetic retinopathy and related eye diseases using retinal images from multiethnic 
+populations with diabetes. JAMA, 318(22), 2211–2223. 
+https://doi.org/10.1001/jama.2017.18152 
+ 
+[3] Gargeya, R., & Leng, T. (2017). Automated identification of diabetic retinopathy 
+using deep learning. Ophthalmology, 124(7), 962–969. 
+https://doi.org/10.1016/j.ophtha.2017.02.008 
+ 
+[4] McMahan, B., Moore, E., Ramage, D., Hampson, S., & Agüera y Arcas, B. A. 
+(2017). Communication-efficient learning of deep networks from decentralized data. 
+In Proceedings of the 20th International Conference on Artificial Intelligence and 
+Statistics (Vol. 54, pp. 1273–1282). 
+ 
+[5] Rieke, N., Hancox, J., Li, W., Milletarì, F., Roth, H. R., Albarqouni, S., … 
+Cardoso, M. J. (2020). The future of digital health with federated learning. npj Digital 
+Medicine, 3, Article 119. https://doi.org/10.1038/s41746-020-00323-1 
+ 
+[6] Sheller, M. J., Edwards, B., Reina, G. A., Martin, J., Pati, S., Kotrotsou, A., … 
+Bakas, S. (2020). Federated learning in medicine: Facilitating multi-institutional 
+collaborations without sharing patient data. Scientific Reports, 10, Article 12598. 
+https://doi.org/10.1038/s41598-020-69250-1 
+ 
+[7] Nagula, J. M., Raman, M., Goel, T., & Roy, P. (2023). DRFL: Federated learning 
+in diabetic retinopathy grading using fundus images. IEEE Transactions on Parallel 
+and Distributed Systems, 34(6), 1789–1801. 
+https://doi.org/10.1109/TPDS.2023.3264473 
+ 
+[8] Matta, S., et al. (2023). Federated learning for diabetic retinopathy detection in a 
+multi-center fundus screening network. In Proceedings of the Annual International 
+Conference of the IEEE Engineering in Medicine and Biology Society (EMBC) (pp. 
+1–4). https://doi.org/10.1109/EMBC40787.2023.10340772 
+ 
+[9] Abadi, M., Chu, A., Goodfellow, I., McMahan, H. B., Mironov, I., Talwar, K., & 
+Zhang, L. (2016). Deep learning with differential privacy. In Proceedings of the ACM 
+SIGSAC Conference on Computer and Communications Security (pp. 308–318). 
+https://doi.org/10.1145/2976749.2978318 
+ 
+[10] Dwork, C., & Roth, A. (2014). The algorithmic foundations of differential 
+privacy. Foundations and Trends in Theoretical Computer Science, 9(3–4), 211–407. 
+https://doi.org/10.1561/0400000042 
+--- PAGE 79 ---
+67 
+ 
+[11] Selvaraju, R. R., Cogswell, M., Das, A., Vedantam, R., Parikh, D., & Batra, D. 
+(2017). Grad-CAM: Visual explanations from deep networks via gradient-based 
+localization. In Proceedings of the IEEE International Conference on Computer 
+Vision (ICCV) (pp. 618–626). https://doi.org/10.1109/ICCV.2017.74 
+ 
+[12] Howard, A., Sandler, M., Chu, G., Chen, L.-C., Chen, B., Tan, M., Wang, W., 
+Zhu, Y., Pang, R., Vasudevan, V., Le, Q. V., & Adam, H. (2019). Searching for 
+MobileNetV3. In Proceedings of the IEEE/CVF International Conference on 
+Computer Vision (ICCV) (pp. 1314–1324). https://doi.org/10.1109/ICCV.2019.00140 
+ 
+[13] Tan, M., & Le, Q. V. (2019). EfficientNet: Rethinking model scaling for 
+convolutional neural networks. In Proceedings of the 36th International Conference 
+on Machine Learning (Vol. 97, pp. 6105–6114). 
+ 
+[14] Abràmoff, M. D., Lavin, P. T., Birch, M., Shah, N., & Folk, J. C. (2018). Pivotal 
+trial of an autonomous AI-based diagnostic system for detection of diabetic 
+retinopathy in primary care offices. npj Digital Medicine, 1, Article 39. 
+https://doi.org/10.1038/s41746-018-0040-6 
+ 
+[15] Li, Y., Zhang, Y., Liu, G., & Lu, M. (2024). A differential privacy federated 
+learning approach for diabetic retinopathy detection. In Advanced Data Mining and 
+Applications (pp. 186–199). https://doi.org/10.1007/978-981-96-0840-9_13 
+--- PAGE 80 ---
+ 
+APPENDIX A 
+This appendix contains additional material that supports the report: training console 
+logs, and listings and files that are kept outside the chapters. Only samples that are 
+important are included, in line with the report guidelines. 
+A.1 Additional Screenshots 
+Fig. A.1 and Fig. A.2 show the console output of the training run in the application. 
+The log lines give the batch progress, the running accuracy and the loss of each epoch, 
+and, at the end of an epoch, the validation accuracy and validation macro-F1. 
+ 
+Fig. A.1 Training Console Log Shown in the Training Page (Sample 1) 
+ 
+Fig. A.2 Training Console Log at the End of an Epoch (Sample 2) 
+
+--- PAGE 81 ---
+ 
+A.2 Additional Code Listings 
+Code Listing A.1: requirements.txt (library versions) 
+Flask>=3.0 
+numpy>=1.26 
+pandas>=2.0 
+Pillow>=10.0 
+scikit-learn>=1.4 
+matplotlib>=3.8 
+python-dotenv>=1.0 
+tensorflow>=2.16 
+ 
+ 
+ 
+ 
+ 
+Code Listing A.2: centralized ,train_assemble 
+import argparse 
+import sys 
+from pathlib import Path 
+ 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "backend")) 
+ 
+from app.config import Config 
+from app.services.training_service import train_centralized 
+ 
+parser = argparse.ArgumentParser() 
+parser.add_argument("--epochs", type=int, default=2) 
+parser.add_argument("--batch-size", type=int, default=16) 
+parser.add_argument("--head-only", action="store_true") 
+parser.add_argument("--loss", choices=["weighted_crossentropy", "focal"], 
+default="weighted_crossentropy") 
+parser.add_argument("--architecture", choices=["MobileNetV3Small", 
+"EfficientNetB0"], default="MobileNetV3Small") 
+parser.add_argument("--criterion", choices=["macro_f1", "accuracy"], 
+default="macro_f1") 
+args = parser.parse_args() 
+root = Path(__file__).resolve().parents[1] 
+metrics = train_centralized(root / "data" / "splits", Config.IMAGE_DIR, 
+Config.MODEL_PATH, Config.MODEL_METADATA_PATH, root / "reports" / 
+"metrics" / "centralized.json", args.epochs, args.batch_size, not args.head_only, 
+args.loss, args.architecture, args.criterion) 
+print(metrics) 
+ 
+"""Train two independent, metadata-verified models for ensemble prediction.""" 
+import argparse 
+import json 
+import os 
+import sys 
+from pathlib import Path 
+--- PAGE 82 ---
+ 
+ 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "backend")) 
+ 
+from app.config import Config 
+from app.services.training_service import train_centralized 
+ 
+parser = argparse.ArgumentParser() 
+parser.add_argument("--epochs", type=int, default=2) 
+parser.add_argument("--batch-size", type=int, default=64) 
+parser.add_argument("--status-file", type=Path, default=None) 
+args = parser.parse_args() 
+root = Path(__file__).resolve().parents[1] 
+output = root / "models" / "ensemble" 
+ 
+def update_status(status: str, message: str, progress: int, current_model: str | None = 
+None, metrics=None): 
+    if not args.status_file: 
+        return 
+    args.status_file.parent.mkdir(parents=True, exist_ok=True) 
+    payload = {"status": status, "message": message, "progress": progress, 
+"current_model": current_model, "metrics": metrics, "output": "", "pid": 
+os.getpid()} 
+    args.status_file.write_text(json.dumps(payload, indent=2), encoding="utf-8") 
+ 
+metrics = {} 
+try: 
+    for index, (architecture, loss) in enumerate((("MobileNetV3Small", 
+"weighted_crossentropy"), ("EfficientNetB0", "focal"))): 
+        name = architecture.lower() 
+        progress = 5 if index == 0 else 55 
+        update_status("running", f"Training {architecture}. This may take several 
+minutes.", progress, architecture, metrics) 
+        print(f"Training {architecture}...", flush=True) 
+        metrics[architecture] = train_centralized(root / "data" / "splits", 
+Config.IMAGE_DIR, output / f"{name}.keras", output / f"{name}.json", root / 
+"reports" / "experiments" / f"{name}.json", args.epochs, args.batch_size, True, loss, 
+architecture, "macro_f1", root / "reports" / "experiments" / f"{name}_history.json") 
+    update_status("completed", "Verified multi-model ensemble is ready.", 100, 
+"Complete", metrics) 
+except BaseException as exc: 
+    update_status("failed", str(exc), 0, None, metrics) 
+    raise 
+ 
+ 
+ 
+ 

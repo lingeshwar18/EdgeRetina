@@ -1,0 +1,42 @@
+{
+  "rows": 3662,
+  "unique_ids": 3662,
+  "label_column": "diagnosis",
+  "id_column": "id_code",
+  "class_distribution": {
+    "0": 1805,
+    "1": 370,
+    "2": 999,
+    "3": 193,
+    "4": 295
+  },
+  "imbalance_ratio_majority_to_minority": 9.352331606217616,
+  "split_sizes": {
+    "train": 2563,
+    "val": 549,
+    "test": 550
+  },
+  "split_class_distribution": {
+    "train": {
+      "0": 1263,
+      "1": 259,
+      "2": 699,
+      "3": 135,
+      "4": 207
+    },
+    "val": {
+      "0": 271,
+      "1": 55,
+      "2": 150,
+      "3": 29,
+      "4": 44
+    },
+    "test": {
+      "0": 271,
+      "1": 56,
+      "2": 150,
+      "3": 29,
+      "4": 44
+    }
+  }
+}

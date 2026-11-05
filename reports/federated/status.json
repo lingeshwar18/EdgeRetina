@@ -1,0 +1,358 @@
+{
+  "status": "completed",
+  "run_id": "68688c55a1864640ab728b6f2032341c",
+  "message": "Federated training and final evaluation completed.",
+  "progress": 100,
+  "round": 5,
+  "rounds": 5,
+  "current_stage": "evaluation",
+  "current_client": null,
+  "clients": [
+    {
+      "id": "Hospital A",
+      "samples": 1026,
+      "status": "completed",
+      "round": 5,
+      "message": "Hospital A update produced and processed.",
+      "loss": 0.9022720456123352,
+      "accuracy": 0.6949317455291748,
+      "update_produced": true,
+      "update_processed": true
+    },
+    {
+      "id": "Hospital B",
+      "samples": 378,
+      "status": "completed",
+      "round": 5,
+      "message": "Hospital B update produced and processed.",
+      "loss": 1.064458966255188,
+      "accuracy": 0.579365074634552,
+      "update_produced": true,
+      "update_processed": true
+    },
+    {
+      "id": "Hospital C",
+      "samples": 643,
+      "status": "completed",
+      "round": 5,
+      "message": "Hospital C update produced and processed.",
+      "loss": 1.3032941818237305,
+      "accuracy": 0.45567652583122253,
+      "update_produced": true,
+      "update_processed": true
+    },
+    {
+      "id": "Hospital D",
+      "samples": 516,
+      "status": "completed",
+      "round": 5,
+      "message": "Hospital D update produced and processed.",
+      "loss": 0.7672316431999207,
+      "accuracy": 0.7306201457977295,
+      "update_produced": true,
+      "update_processed": true
+    }
+  ],
+  "round_history": [
+    {
+      "round": 1,
+      "samples": 2563,
+      "participants": 4,
+      "status": "completed"
+    },
+    {
+      "round": 2,
+      "samples": 2563,
+      "participants": 4,
+      "status": "completed"
+    },
+    {
+      "round": 3,
+      "samples": 2563,
+      "participants": 4,
+      "status": "completed"
+    },
+    {
+      "round": 4,
+      "samples": 2563,
+      "participants": 4,
+      "status": "completed"
+    },
+    {
+      "round": 5,
+      "samples": 2563,
+      "participants": 4,
+      "status": "completed"
+    }
+  ],
+  "stages": {
+    "initialize": {
+      "status": "completed",
+      "message": "Initial global checkpoint loaded successfully."
+    },
+    "dataset": {
+      "status": "completed",
+      "message": "Validated 2563 training records."
+    },
+    "partition": {
+      "status": "completed",
+      "message": "Client partitions are ready."
+    },
+    "distribute": {
+      "status": "completed",
+      "message": "Initial global model loaded for distribution."
+    },
+    "client_training": {
+      "status": "running",
+      "message": "Local training round 5/5 started."
+    },
+    "processing": {
+      "status": "completed",
+      "message": "Applied norm clipping at 1.0 and Gaussian noise multiplier 0.1."
+    },
+    "aggregation": {
+      "status": "completed",
+      "message": "FedAvg aggregation completed for round 5."
+    },
+    "checkpoint": {
+      "status": "completed",
+      "message": "Round 5 checkpoint saved and load verified."
+    },
+    "evaluation": {
+      "status": "completed",
+      "message": "Final global model evaluation completed."
+    }
+  },
+  "dp_clip_norm": 1.0,
+  "dp_noise_multiplier": 0.1,
+  "started_at": "2026-10-25T14:06:10.368300+00:00",
+  "logs": [
+    "Validating the dataset, configuration and initial checkpoint.",
+    "Validated 2563 training records.",
+    "Partitioning records across four simulated clients.",
+    "Client partitions are ready.",
+    "Initial global checkpoint loaded successfully.",
+    "Initial global model loaded for distribution.",
+    "Local training round 1/5 started.",
+    "Hospital A local training started.",
+    "Privacy-inspired processing completed for 1 of 4 updates in round 1.",
+    "Hospital A update produced and processed.",
+    "Hospital B local training started.",
+    "Privacy-inspired processing completed for 2 of 4 updates in round 1.",
+    "Hospital B update produced and processed.",
+    "Hospital C local training started.",
+    "Privacy-inspired processing completed for 3 of 4 updates in round 1.",
+    "Hospital C update produced and processed.",
+    "Hospital D local training started.",
+    "Privacy-inspired processing completed for 4 of 4 updates in round 1.",
+    "Hospital D update produced and processed.",
+    "Applied norm clipping at 1.0 and Gaussian noise multiplier 0.1.",
+    "FedAvg is aggregating 4 updates.",
+    "FedAvg aggregation completed for round 1.",
+    "Round 1 checkpoint saved and load verified.",
+    "Local training round 2/5 started.",
+    "Hospital A local training started.",
+    "Privacy-inspired processing completed for 1 of 4 updates in round 2.",
+    "Hospital A update produced and processed.",
+    "Hospital B local training started.",
+    "Privacy-inspired processing completed for 2 of 4 updates in round 2.",
+    "Hospital B update produced and processed.",
+    "Hospital C local training started.",
+    "Privacy-inspired processing completed for 3 of 4 updates in round 2.",
+    "Hospital C update produced and processed.",
+    "Hospital D local training started.",
+    "Privacy-inspired processing completed for 4 of 4 updates in round 2.",
+    "Hospital D update produced and processed.",
+    "Applied norm clipping at 1.0 and Gaussian noise multiplier 0.1.",
+    "FedAvg is aggregating 4 updates.",
+    "FedAvg aggregation completed for round 2.",
+    "Round 2 checkpoint saved and load verified.",
+    "Local training round 3/5 started.",
+    "Hospital A local training started.",
+    "Privacy-inspired processing completed for 1 of 4 updates in round 3.",
+    "Hospital A update produced and processed.",
+    "Hospital B local training started.",
+    "Privacy-inspired processing completed for 2 of 4 updates in round 3.",
+    "Hospital B update produced and processed.",
+    "Hospital C local training started.",
+    "Privacy-inspired processing completed for 3 of 4 updates in round 3.",
+    "Hospital C update produced and processed.",
+    "Hospital D local training started.",
+    "Privacy-inspired processing completed for 4 of 4 updates in round 3.",
+    "Hospital D update produced and processed.",
+    "Applied norm clipping at 1.0 and Gaussian noise multiplier 0.1.",
+    "FedAvg is aggregating 4 updates.",
+    "FedAvg aggregation completed for round 3.",
+    "Round 3 checkpoint saved and load verified.",
+    "Local training round 4/5 started.",
+    "Hospital A local training started.",
+    "Privacy-inspired processing completed for 1 of 4 updates in round 4.",
+    "Hospital A update produced and processed.",
+    "Hospital B local training started.",
+    "Privacy-inspired processing completed for 2 of 4 updates in round 4.",
+    "Hospital B update produced and processed.",
+    "Hospital C local training started.",
+    "Privacy-inspired processing completed for 3 of 4 updates in round 4.",
+    "Hospital C update produced and processed.",
+    "Hospital D local training started.",
+    "Privacy-inspired processing completed for 4 of 4 updates in round 4.",
+    "Hospital D update produced and processed.",
+    "Applied norm clipping at 1.0 and Gaussian noise multiplier 0.1.",
+    "FedAvg is aggregating 4 updates.",
+    "FedAvg aggregation completed for round 4.",
+    "Round 4 checkpoint saved and load verified.",
+    "Local training round 5/5 started.",
+    "Hospital A local training started.",
+    "Privacy-inspired processing completed for 1 of 4 updates in round 5.",
+    "Hospital A update produced and processed.",
+    "Hospital B local training started.",
+    "Privacy-inspired processing completed for 2 of 4 updates in round 5.",
+    "Hospital B update produced and processed.",
+    "Hospital C local training started.",
+    "Privacy-inspired processing completed for 3 of 4 updates in round 5.",
+    "Hospital C update produced and processed.",
+    "Hospital D local training started.",
+    "Privacy-inspired processing completed for 4 of 4 updates in round 5.",
+    "Hospital D update produced and processed.",
+    "Applied norm clipping at 1.0 and Gaussian noise multiplier 0.1.",
+    "FedAvg is aggregating 4 updates.",
+    "FedAvg aggregation completed for round 5.",
+    "Round 5 checkpoint saved and load verified.",
+    "Evaluating the final saved global model on the held-out test split.",
+    "Final global model evaluation completed."
+  ],
+  "updated_at": "2026-10-25T15:44:27.740115+00:00",
+  "architecture": "EdgeRetinaMobileNetV3Small",
+  "round_status": "running",
+  "samples": 516,
+  "processed_updates": 4,
+  "loss": 0.7672316431999207,
+  "accuracy": 0.7306201457977295,
+  "update_produced": true,
+  "update_processed": true,
+  "aggregation": {
+    "status": "completed",
+    "round": 5,
+    "participants": 4,
+    "sample_counts": [
+      1026,
+      378,
+      643,
+      516
+    ]
+  },
+  "completed_rounds": 5,
+  "checkpoint": "models/federated/edgeretina_federated.keras",
+  "evaluation": {
+    "accuracy": 0.6709090909090909,
+    "macro_precision": 0.4381329534662868,
+    "macro_recall": 0.40321317550837854,
+    "macro_f1": 0.4007576722364945,
+    "weighted_f1": 0.6348388915171077,
+    "qwk": 0.6867497327515202,
+    "mae": 0.5472727272727272,
+    "confusion_matrix": [
+      [
+        259,
+        1,
+        11,
+        0,
+        0
+      ],
+      [
+        21,
+        12,
+        21,
+        0,
+        2
+      ],
+      [
+        38,
+        5,
+        86,
+        0,
+        21
+      ],
+      [
+        0,
+        0,
+        14,
+        0,
+        15
+      ],
+      [
+        6,
+        2,
+        24,
+        0,
+        12
+      ]
+    ],
+    "per_class": {
+      "0": {
+        "precision": 0.7993827160493827,
+        "recall": 0.955719557195572,
+        "f1-score": 0.8705882352941177,
+        "support": 271.0
+      },
+      "1": {
+        "precision": 0.6,
+        "recall": 0.21428571428571427,
+        "f1-score": 0.3157894736842105,
+        "support": 56.0
+      },
+      "2": {
+        "precision": 0.5512820512820513,
+        "recall": 0.5733333333333334,
+        "f1-score": 0.5620915032679739,
+        "support": 150.0
+      },
+      "3": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1-score": 0.0,
+        "support": 29.0
+      },
+      "4": {
+        "precision": 0.24,
+        "recall": 0.2727272727272727,
+        "f1-score": 0.2553191489361702,
+        "support": 44.0
+      },
+      "accuracy": 0.6709090909090909,
+      "macro avg": {
+        "precision": 0.4381329534662868,
+        "recall": 0.40321317550837854,
+        "f1-score": 0.4007576722364945,
+        "support": 550.0
+      },
+      "weighted avg": {
+        "precision": 0.6245182249848916,
+        "recall": 0.6709090909090909,
+        "f1-score": 0.6348388915171077,
+        "support": 550.0
+      }
+    },
+    "support": [
+      271,
+      56,
+      150,
+      29,
+      44
+    ],
+    "prediction_counts": [
+      324,
+      20,
+      156,
+      0,
+      50
+    ],
+    "prediction_collapsed": false,
+    "evaluation_samples": 550,
+    "evaluation_dataset": "data/splits/test.csv",
+    "architecture": "EdgeRetinaMobileNetV3Small",
+    "checkpoint": "models/federated/edgeretina_federated.keras",
+    "run_id": "68688c55a1864640ab728b6f2032341c"
+  },
+  "completed_at": "2026-10-25T15:44:27.781017+00:00"
+}
